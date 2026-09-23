@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f5f4f1">
+  <meta name="description" content="Prepare TheTVDB artwork with precise crops, quality checks and presets. Your images stay on your device.">
+  <title>Onion's Img Editor — TheTVDB artwork</title>
+  <link rel="icon" href="./logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="./" aria-label="Onion's Img Editor">
+    <img class="brand-mark" src="./logo.svg" alt="">
+    <span class="brand-copy"><strong>Onion's</strong><small>IMG EDITOR</small></span>
+  </a>
+  <div class="topbar-right">
+    <span class="privacy-pill"><i></i><span data-i18n="privacyPill">Files stay on your device</span></span>
+    <a data-i18n="tvdbRules" href="https://support.thetvdb.com/kb/faq.php?cid=1" target="_blank" rel="noreferrer">TheTVDB guidelines ↗</a>
+    <label class="language-selector"><span data-i18n="languageLabel">Language</span><select id="language-select" aria-label="Language"><option value="en">English</option><option value="nl">Nederlands</option></select></label>
+  </div>
+</header>
+<main class="app-shell">
+  <aside class="left-panel">
+    <section class="panel-section">
+      <div class="section-heading"><span class="eyebrow" data-i18n="stepImage">01 / IMAGE</span><span id="file-state" class="tiny-status">No file yet</span></div>
+      <label class="upload-zone" id="drop-zone" for="file-input">
+        <input id="file-input" type="file" accept="image/png,image/jpeg,image/webp,image/avif">
+        <span class="upload-icon">↥</span><strong data-i18n="addImage">Add an image</strong><span data-i18n="dropOrBrowse">Drop it here or browse</span><small>PNG, JPG, WebP or AVIF</small>
+      </label>
+      <div id="file-details" class="file-details" hidden><span class="file-type-icon">IMG</span><span class="file-copy"><strong id="file-name"></strong><small id="file-size"></small></span><button id="remove-image" class="icon-button" type="button" aria-label="Remove image" data-i18n-aria="removeImage">×</button></div>
+    </section>
+    <section class="panel-section">
+      <div class="section-heading"><span class="eyebrow" data-i18n="stepPreset">02 / TVDB PRESET</span></div>
+      <div id="preset-grid" class="preset-grid" aria-label="Choose an image type"></div>
+      <button id="more-presets" class="text-button" type="button">+ More TheTVDB formats</button>
+      <div id="extra-presets" class="extra-presets" hidden></div>
+      <div class="custom-heading"><span data-i18n="customSize">Custom size</span><span class="custom-tag" data-i18n="customRatio">custom ratio</span></div>
+      <div class="custom-dimensions"><label><span data-i18n="width">Width</span><input id="custom-width" type="number" min="1" max="12000" value="1200"></label><span>×</span><label><span data-i18n="height">Height</span><input id="custom-height" type="number" min="1" max="12000" value="675"></label></div>
+      <button id="apply-custom" class="custom-apply" type="button" data-i18n="applySize">Apply size</button>
+    </section>
+    <div class="panel-tip"><b>✳</b><p><strong data-i18n="qualityTitle">Keep the original quality</strong><br><span data-i18n="qualityCopy">PNG encoding is lossless. JPEG is lossy. Cropping or resizing changes pixels, and small sources are never silently enlarged.</span></p></div>
+  </aside>
+
+  <section class="workspace">
+    <div class="workspace-heading"><div><div class="eyebrow">ONION'S STUDIO <span>/</span> TVDB</div><h1 data-i18n="pageTitle">Artwork, precisely framed</h1><p data-i18n="pageIntro">Choose a preset, position the crop and export.</p></div><span class="local-badge" data-i18n="localBadge">⌘ &nbsp;Processed locally</span></div>
+    <div class="stage-card">
+      <div class="stage-toolbar"><div class="stage-format"><span id="selected-preset-icon" class="format-icon">▯</span><div><strong id="selected-preset-name">Poster</strong><small id="selected-dimensions">680 × 1000 px</small></div></div><div class="stage-actions"><span id="center-status" class="center-status"><i></i><span id="center-status-text">Centered</span></span><button id="center-image" class="center-button" type="button"><b>⊙</b> <span data-i18n="centerImage">Center image</span></button></div></div>
+      <div id="stage" class="stage">
+        <div id="artboard" class="artboard" tabindex="0" role="application" aria-label="Drag the image or use the arrow keys to move the crop" data-i18n-aria="boardAria">
+          <img id="preview-image" alt="" draggable="false" hidden><div id="logo-safe-area" class="logo-safe-area" hidden></div>
+          <div class="center-guide guide-h"></div><div class="center-guide guide-v"></div><div class="center-reticle"></div>
+          <div id="season-stamp" class="season-stamp" hidden>Season 1</div>
+          <div id="empty-state" class="empty-state"><span>▧</span><strong data-i18n="canvasReady">Your canvas is ready</strong><small data-i18n="canvasHint">Add an image on the left<br>to adjust its crop.</small></div>
+          <span id="drag-hint" class="drag-hint" hidden data-i18n="dragToMove">Drag to reposition</span>
+        </div>
+        <div class="stage-caption" data-i18n="stageCaption">Drag to reposition · use Center image for exact alignment</div>
+      </div>
+      <div class="position-toolbar">
+        <div class="position-label"><b class="eyebrow" data-i18n="position">POSITION</b><small data-i18n="nudgeHint">Move in small steps</small></div>
+        <div class="nudge-controls"><button data-dx="0" data-dy="-1" type="button" aria-label="Up" data-i18n-aria="up">↑</button><button data-dx="-1" data-dy="0" type="button" aria-label="Left" data-i18n-aria="left">←</button><button data-dx="0" data-dy="1" type="button" aria-label="Down" data-i18n-aria="down">↓</button><button data-dx="1" data-dy="0" type="button" aria-label="Right" data-i18n-aria="right">→</button></div>
+        <label class="zoom-control"><span data-i18n="zoom">ZOOM</span><input id="zoom-slider" type="range" min="1" max="1" step=".01" value="1" disabled><output id="zoom-value">100%</output></label>
+      </div>
+    </div>
+    <div id="guideline-card" class="guideline-card"><span class="guideline-icon">✓</span><div><strong id="guideline-title">Choose a preset to see its guidelines</strong><p id="guideline-copy">TheTVDB dimensions and artwork reminders appear here.</p></div><a id="guideline-link" href="https://support.thetvdb.com/kb/faq.php?cid=1" target="_blank" rel="noreferrer">View rules ↗</a></div>
+  </section>
+
+  <aside class="right-panel">
+    <div class="inspector-header"><span class="eyebrow" data-i18n="stepOutput">03 / OUTPUT</span><b>⌗</b></div>
+    <div class="output-size-card"><span data-i18n="canvasSize">CANVAS SIZE</span><strong id="output-size">680 <i>×</i> 1000</strong><small data-i18n="exactPixels">pixels · exact</small></div>
+    <section class="inspector-section">
+      <div class="inspector-title"><h2 data-i18n="checksTitle">Checks</h2><span class="live-tag"><i></i>LIVE</span></div>
+      <div id="resolution-check" class="check-row neutral"><i class="check-symbol">•</i><span><strong data-i18n="sourceResolution">Source resolution</strong><small id="resolution-copy">Add an image</small></span></div>
+      <div id="transparency-check" class="check-row neutral"><i class="check-symbol">•</i><span><strong data-i18n="transparency">Transparency</strong><small id="transparency-copy">Only required for ClearLogo and ClearArt</small></span></div>
+      <div id="alignment-check" class="check-row neutral"><i class="check-symbol">•</i><span><strong data-i18n="alignment">Alignment</strong><small id="alignment-copy">Centered on the canvas</small></span></div>
+      <div id="file-limit-check" class="check-row neutral"><i class="check-symbol">•</i><span><strong data-i18n="fileSize">File size</strong><small id="file-limit-copy">TheTVDB limit: 10 MB</small></span></div>
+    </section>
+    <section id="season-panel" class="inspector-section" hidden>
+      <div class="inspector-title"><h2 data-i18n="seasonLabel">Season label</h2><label class="switch"><input id="season-toggle" type="checkbox" checked><span></span><em class="sr-only" data-i18n="addSeasonLabel">Add season label</em></label></div>
+      <p class="section-description" data-i18n="seasonGuidance">A label alone does not make artwork season-specific. Use relevant season imagery or a series logo; season 1 is an exception.</p>
+      <button id="auto-season-style" class="auto-style-button" type="button">✦ <span data-i18n="autoStyle">Find a clear spot &amp; match contrast</span></button><p id="season-auto-status" class="season-auto-status" aria-live="polite"></p>
+      <label class="field-label" for="season-number" data-i18n="seasonNumber">Season number</label><div class="season-input-wrap"><span data-i18n="seasonPrefix">Season</span><input id="season-number" type="number" min="0" max="99" value="1" aria-label="Season number"></div>
+      <label class="field-label" for="stamp-position" data-i18n="labelPosition">Label position</label><select id="stamp-position" class="select-control"><option value="bottom-left" data-i18n="position_bottom_left">Bottom left</option><option value="bottom-center" data-i18n="position_bottom_center">Bottom center</option><option value="bottom-right" data-i18n="position_bottom_right">Bottom right</option><option value="top-left" data-i18n="position_top_left">Top left</option><option value="top-center" data-i18n="position_top_center">Top center</option><option value="top-right" data-i18n="position_top_right">Top right</option></select>
+      <div class="season-style-row"><label class="style-field"><span data-i18n="textColor">Text color</span><input id="stamp-color" type="color" value="#ffffff"></label><label class="style-field"><span data-i18n="badgeColor">Badge color</span><input id="stamp-background-color" type="color" value="#17141c"></label></div>
+      <label class="style-field stamp-style-field"><span data-i18n="typeStyle">Type style</span><select id="stamp-style" class="select-control"><option value="sans" data-i18n="styleModern">Modern</option><option value="serif" data-i18n="styleClassic">Classic</option><option value="condensed" data-i18n="styleCondensed">Condensed</option></select></label>
+    </section>
+    <section class="inspector-section">
+      <div class="inspector-title"><h2 data-i18n="exportTitle">Export</h2></div>
+      <label class="field-label" for="format-select" data-i18n="fileFormat">File format</label><select id="format-select" class="select-control"><option value="png" data-i18n="pngOption">PNG · lossless</option><option value="jpeg" data-i18n="jpegOption">JPEG · smaller file</option></select>
+      <p id="format-note" class="format-note">PNG preserves detail and transparency without extra compression loss.</p>
+      <div id="jpeg-options" hidden><label class="field-label" for="jpeg-quality"><span data-i18n="jpegQuality">JPEG quality</span><output id="jpeg-quality-value">96%</output></label><input id="jpeg-quality" type="range" min=".8" max="1" step=".01" value=".96"><label class="field-label" for="jpeg-background" data-i18n="transparentBackground">Background for transparency</label><input id="jpeg-background" class="color-input" type="color" value="#ffffff"></div>
+      <button id="download-button" class="download-button" disabled>↓ &nbsp;Download PNG</button><p id="export-message" class="export-message" aria-live="polite">Add an image to export.</p>
+    </section>
+    <div class="privacy-note"><b>◈</b><p><strong data-i18n="privacyTitle">Private by design</strong><br><span data-i18n="privacyCopy">Images are processed in your browser and never uploaded.</span></p></div>
+  </aside>
+</main>
+<footer class="page-footer"><b>ONION'S IMG EDITOR</b><span data-i18n="footerCopy">Made for TheTVDB artwork · TheTVDB decides what it accepts</span><span>v1.1</span></footer>
+</body></html>
