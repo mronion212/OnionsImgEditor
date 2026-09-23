@@ -1,0 +1,7 @@
+services:
+  onion-img-editor:
+    build: .
+    container_name: onion-img-editor
+    restart: unless-stopped
+    ports:
+      - "${PORT:-8080}:80"
