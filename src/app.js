@@ -34,16 +34,43 @@ const COPY = {
 Object.assign(COPY.en,{boardAria:"Drag the image or use the arrow keys to move the crop",up:"Up",left:"Left",down:"Down",right:"Right",styleModern:"Modern",styleClassic:"Classic",styleCondensed:"Condensed",transparency:"Transparency",transparencyOptional:"Only required for ClearLogo and ClearArt",transparencyOk:"Transparent pixels detected in the source",transparencyMissing:"The source appears opaque. Choose a PNG with actual transparency.",generalGuidelines:"No spoilers, nudity, vulgarity, unrelated logos or watermarks. Do not stretch or upscale; crop larger images and use sufficiently large sources. Avoid duplicates or minor variants, and keep season or episode text off series-level art. If text appears, select its primary language when uploading. TheTVDB limits uploads to three images per type for each series, season or movie."});
 Object.assign(COPY.nl,{boardAria:"Sleep de afbeelding of gebruik de pijltjestoetsen om de uitsnede te verplaatsen",up:"Omhoog",left:"Naar links",down:"Omlaag",right:"Naar rechts",styleModern:"Modern",styleClassic:"Klassiek",styleCondensed:"Compact",transparency:"Transparantie",transparencyOptional:"Alleen nodig voor ClearLogo en ClearArt",transparencyOk:"Transparante pixels gevonden in de bron",transparencyMissing:"De bron lijkt ondoorzichtig. Kies een PNG met echte transparantie.",generalGuidelines:"Geen spoilers, naaktheid, grofheid, irrelevante logo's of watermerken. Rek niet uit en schaal niet op; snijd grotere beelden bij en gebruik bronnen met voldoende resolutie. Vermijd duplicaten en kleine varianten, en zet geen seizoens- of afleveringstekst op serie-artwork. Selecteer bij tekst de primaire taal wanneer je uploadt. TheTVDB staat maximaal drie afbeeldingen per type per serie, seizoen of film toe."});
 
-const state={preset:PRESETS[0],custom:false,file:null,image:null,url:null,hasTransparency:false,shiftX:0,shiftY:0,zoom:1,dragging:false,pointerX:0,pointerY:0,language:"en"};
+Object.assign(COPY.en,{
+ themeDarkLabel:"Switch to dark mode",themeLightLabel:"Switch to light mode",
+ formatPng:"PNG keeps transparency. JPEG fills transparent areas with a background color and is available for presets that do not require transparency.",formatJpeg:"JPEG is smaller but lossy. Any transparent areas are filled with the selected background color.",formatPngRequired:"ClearLogo and ClearArt require PNG transparency. JPEG is unavailable for these presets; choose another preset to export JPEG.",
+ clearlogoSummary:"ClearLogo has strict transparency and alignment requirements. Use this checklist to prepare a file that is ready to upload.",clearlogoChecklist:"ClearLogo upload checklist",clearlogoIntro:"Check every point before exporting and uploading.",
+ clearlogoCanvasTitle:"Canvas and source size",clearlogoCanvasCopy:"Use a source of at least 800 × 310 px and export an exact 800 × 310 px canvas. Keep the logo's proportions; never stretch it.",
+ clearlogoAlphaTitle:"Real transparency",clearlogoAlphaCopy:"Use a PNG with transparent pixels around the logo. A checkerboard is only a preview; it does not prove that the source is transparent.",
+ clearlogoCenterTitle:"Center and size the visible logo",clearlogoCenterCopy:"Center the non-transparent artwork, not the file edges. Fill the 780 × 290 px safe area as much as possible without stretching; keep the logo itself out of the 10 px gutter. A drop shadow or glow may extend into the gutter.",
+ clearlogoSizeTitle:"Keep the original scale",clearlogoSizeCopy:"Use a crisp, sufficiently large source. Do not enlarge or distort it; crop a larger image if needed.",
+ clearlogoContrastTitle:"Check both backgrounds",clearlogoContrastCopy:"Make sure the logo is easy to see on light and dark backgrounds. Keep the background transparent; an outline or glow can help. Avoid pure white or pure black logos.",
+ clearlogoContentTitle:"Keep it relevant",clearlogoContentCopy:"Use only the series or movie logo. No spoilers, nudity, vulgarity, watermarks, unrelated logos, or extra text. Keep season/episode text off series-level artwork. Avoid duplicates and minor variants.",
+ clearlogoLanguageTitle:"Language and upload limit",clearlogoLanguageCopy:"Select the primary language when the logo contains text. TheTVDB allows at most 3 ClearLogo images per series, season, or movie.",
+ clearlogoFootnote:"Keep the exported PNG under TheTVDB's 10 MB upload limit."
+});
+Object.assign(COPY.nl,{
+ themeDarkLabel:"Schakel naar donkere modus",themeLightLabel:"Schakel naar lichte modus",
+ formatPng:"PNG behoudt transparantie. JPEG vult transparante delen met een achtergrondkleur en is beschikbaar bij presets die geen transparantie vereisen.",formatJpeg:"JPEG is kleiner maar verliesgevend. Transparante delen worden gevuld met de gekozen achtergrondkleur.",formatPngRequired:"ClearLogo en ClearArt vereisen een transparante PNG. JPEG is voor deze presets niet beschikbaar; kies een andere preset om als JPEG te exporteren.",
+ clearlogoSummary:"Voor ClearLogo gelden strikte eisen voor transparantie en uitlijning. Met deze checklist maak je het bestand klaar voor upload.",clearlogoChecklist:"ClearLogo-uploadchecklist",clearlogoIntro:"Loop alle punten na voordat je exporteert en uploadt.",
+ clearlogoCanvasTitle:"Canvas- en bronformaat",clearlogoCanvasCopy:"Gebruik een bron van minimaal 800 × 310 px en exporteer een canvas van exact 800 × 310 px. Behoud de verhoudingen van het logo en rek het nooit uit.",
+ clearlogoAlphaTitle:"Echte transparantie",clearlogoAlphaCopy:"Gebruik een PNG met transparante pixels rondom het logo. Een schaakbord is alleen een voorbeeldweergave; het bewijst niet dat de bron transparant is.",
+ clearlogoCenterTitle:"Centreer en schaal het zichtbare logo",clearlogoCenterCopy:"Centreer het niet-transparante artwork, niet de randen van het bronbestand. Vul het veilige vlak van 780 × 290 px zo veel mogelijk zonder uitrekken; houd het logo zelf buiten de marge van 10 px. Een schaduw of gloed mag wel in die marge vallen.",
+ clearlogoSizeTitle:"Behoud de oorspronkelijke schaal",clearlogoSizeCopy:"Gebruik een scherpe bron met voldoende pixels. Vergroot of vervorm die niet; snijd een grotere afbeelding indien nodig bij.",
+ clearlogoContrastTitle:"Controleer lichte en donkere achtergronden",clearlogoContrastCopy:"Zorg dat het logo op beide goed zichtbaar is. Behoud een transparante achtergrond; een omlijning of gloed kan helpen. Vermijd volledig witte of zwarte logo's.",
+ clearlogoContentTitle:"Gebruik alleen relevant artwork",clearlogoContentCopy:"Gebruik alleen het serie- of filmlogo; geen spoilers, naaktheid, grofheid, watermerken, irrelevante logo's of extra tekst. Geen seizoens-/afleveringstekst op serie-artwork. Vermijd duplicaten en kleine varianten.",
+ clearlogoLanguageTitle:"Taal en uploadlimiet",clearlogoLanguageCopy:"Kies bij tekst de primaire taal. TheTVDB staat maximaal 3 ClearLogo-afbeeldingen per serie, seizoen of film toe.",
+ clearlogoFootnote:"Houd de geëxporteerde PNG onder de uploadlimiet van 10 MB van TheTVDB."
+});
+
+const state={preset:PRESETS[0],custom:false,file:null,image:null,url:null,hasTransparency:false,alphaBounds:null,shiftX:0,shiftY:0,zoom:1,dragging:false,pointerX:0,pointerY:0,language:"en"};
 const $=(s)=>document.querySelector(s);
 const ui={
- input:$("#file-input"),drop:$("#drop-zone"),fileState:$("#file-state"),fileDetails:$("#file-details"),fileName:$("#file-name"),fileSize:$("#file-size"),remove:$("#remove-image"),language:$("#language-select"),
+ input:$("#file-input"),drop:$("#drop-zone"),fileState:$("#file-state"),fileDetails:$("#file-details"),fileName:$("#file-name"),fileSize:$("#file-size"),remove:$("#remove-image"),language:$("#language-select"),theme:$("#theme-toggle"),
  presetGrid:$("#preset-grid"),more:$("#more-presets"),extra:$("#extra-presets"),customW:$("#custom-width"),customH:$("#custom-height"),applyCustom:$("#apply-custom"),
  presetName:$("#selected-preset-name"),presetIcon:$("#selected-preset-icon"),dimensions:$("#selected-dimensions"),outputSize:$("#output-size"),
  stage:$("#stage"),board:$("#artboard"),image:$("#preview-image"),empty:$("#empty-state"),safe:$("#logo-safe-area"),stamp:$("#season-stamp"),dragHint:$("#drag-hint"),
  centerStatus:$("#center-status"),centerText:$("#center-status-text"),center:$("#center-image"),zoom:$("#zoom-slider"),zoomValue:$("#zoom-value"),
  resolution:$("#resolution-check"),resolutionText:$("#resolution-copy"),transparency:$("#transparency-check"),transparencyText:$("#transparency-copy"),alignment:$("#alignment-check"),alignmentText:$("#alignment-copy"),limit:$("#file-limit-check"),limitText:$("#file-limit-copy"),
- guide:$("#guideline-card"),guideTitle:$("#guideline-title"),guideCopy:$("#guideline-copy"),guideLink:$("#guideline-link"),
+ guide:$("#guideline-card"),guideTitle:$("#guideline-title"),guideCopy:$("#guideline-copy"),guideLink:$("#guideline-link"),clearlogoGuide:$("#clearlogo-guide"),
  seasonPanel:$("#season-panel"),seasonToggle:$("#season-toggle"),seasonNumber:$("#season-number"),stampPosition:$("#stamp-position"),stampColor:$("#stamp-color"),stampBackground:$("#stamp-background-color"),stampStyle:$("#stamp-style"),autoStyle:$("#auto-season-style"),autoStatus:$("#season-auto-status"),
  format:$("#format-select"),formatNote:$("#format-note"),jpegOptions:$("#jpeg-options"),jpegQuality:$("#jpeg-quality"),jpegQualityValue:$("#jpeg-quality-value"),jpegBackground:$("#jpeg-background"),
  download:$("#download-button"),message:$("#export-message")
@@ -81,22 +108,31 @@ function updatePresetInfo(){
  const p=state.preset;ui.presetName.textContent=state.custom?t("customPreset"):presetLabel(p);ui.presetIcon.textContent=state.custom?"⌗":p.icon;
  ui.dimensions.textContent=p.width+" × "+p.height+" px";ui.outputSize.innerHTML=p.width+" <i>×</i> "+p.height;ui.seasonPanel.hidden=p.id!=="season-poster";
  ui.guideTitle.textContent=state.custom?t("customTitle"):p.width+" × "+p.height+" px · "+presetLabel(p);
- ui.guideCopy.textContent=state.custom?t("customGuideline"):t("guide_"+p.id)+" "+t("generalGuidelines");
+ ui.clearlogoGuide.hidden=state.custom||p.id!=="clearlogo";
+ ui.guideCopy.textContent=state.custom?t("customGuideline"):p.id==="clearlogo"?t("clearlogoSummary"):t("guide_"+p.id)+" "+t("generalGuidelines");
  ui.guideLink.href="https://support.thetvdb.com/kb/faq.php?id="+(state.custom?"1":p.faq);ui.guideLink.textContent=state.custom?t("generalRules"):t("viewRules");ui.guide.classList.remove("warning","error");
 }
 function geometry(){
  if(!state.image)return null;
  const p=state.preset,w=p.width,h=p.height,sw=state.image.naturalWidth,sh=state.image.naturalHeight;
- const idealScale=p.mode==="contain"?Math.min((w-2*(p.gutter||0))/sw,(h-2*(p.gutter||0))/sh):Math.max(w/sw,h/sh);
+ const bounds=p.id==="clearlogo"&&state.alphaBounds?state.alphaBounds:{left:0,top:0,right:sw,bottom:sh};
+ const contentW=bounds.right-bounds.left,contentH=bounds.bottom-bounds.top;
+ const idealScale=p.mode==="contain"?Math.min((w-2*(p.gutter||0))/contentW,(h-2*(p.gutter||0))/contentH):Math.max(w/sw,h/sh);
  let base=idealScale;if(p.mode==="contain")base=Math.min(1,base);
- const scale=base*state.zoom,dw=sw*scale,dh=sh*scale;let x=(w-dw)/2+state.shiftX,y=(h-dh)/2+state.shiftY;
+ const scale=base*state.zoom,dw=sw*scale,dh=sh*scale;
+ const originX=p.id==="clearlogo"?(w-contentW*scale)/2-bounds.left*scale:(w-dw)/2;
+ const originY=p.id==="clearlogo"?(h-contentH*scale)/2-bounds.top*scale:(h-dh)/2;
+ let x=originX+state.shiftX,y=originY+state.shiftY;
  if(p.mode==="cover"){x=Math.min(0,Math.max(w-dw,x));y=Math.min(0,Math.max(h-dh,y))}
- else{const gutter=p.gutter||0;x=Math.min(w-gutter-dw,Math.max(gutter,x));y=Math.min(h-gutter-dh,Math.max(gutter,y))}
- return {w,h,sw,sh,scale,dw,dh,x,y,base,idealScale,mode:p.mode};
+ else if(p.id==="clearlogo"){
+  const gutter=p.gutter||0,minX=gutter-bounds.left*scale,maxX=w-gutter-bounds.right*scale,minY=gutter-bounds.top*scale,maxY=h-gutter-bounds.bottom*scale;
+  x=Math.min(maxX,Math.max(minX,x));y=Math.min(maxY,Math.max(minY,y));
+ }else{const gutter=p.gutter||0;x=Math.min(w-gutter-dw,Math.max(gutter,x));y=Math.min(h-gutter-dh,Math.max(gutter,y))}
+ return {w,h,sw,sh,scale,dw,dh,x,y,base,idealScale,mode:p.mode,contentBounds:bounds,originX,originY};
 }
-function constrainPosition(){const g=geometry();if(!g)return;state.shiftX=g.x-(g.w-g.dw)/2;state.shiftY=g.y-(g.h-g.dh)/2}
+function constrainPosition(){const g=geometry();if(!g)return;state.shiftX=g.x-g.originX;state.shiftY=g.y-g.originY}
 function sizeBoard(){
- const ratio=state.preset.width/state.preset.height,maxW=Math.max(120,Math.min(ui.stage.clientWidth-42,690)),maxH=Math.max(120,Math.min(ui.stage.clientHeight-75,510));
+ const ratio=state.preset.width/state.preset.height,maxW=Math.max(120,Math.min(ui.stage.clientWidth-42,820)),maxH=Math.max(120,Math.min(ui.stage.clientHeight-75,580));
  let w=Math.min(maxW,maxH*ratio),h=w/ratio;if(h>maxH){h=maxH;w=h*ratio}ui.board.style.width=Math.round(w)+"px";ui.board.style.height=Math.round(h)+"px";
 }
 function hexRgba(hex,alpha){
@@ -135,7 +171,7 @@ function updateChecks(){
   checkClass(ui.limit,"neutral","•");ui.limitText.textContent=t("tvdbLimit");ui.centerStatus.classList.remove("off-center");ui.centerText.textContent=t("centered");ui.download.disabled=true;ui.message.textContent=t("addImageToExport");ui.message.className="export-message";return;
  }
  const g=geometry(),tooSmallCover=g.mode==="cover"&&g.scale>1.0001,tooSmallContain=g.mode==="contain"&&(g.sw<g.w||g.sh<g.h),tooSmall=tooSmallCover||tooSmallContain,transparencyMissing=state.preset.pngOnly&&!state.hasTransparency;
- const centered=Math.abs(g.x+g.dw/2-g.w/2)<.75&&Math.abs(g.y+g.dh/2-g.h/2)<.75;
+ const centered=Math.abs(g.x+(g.contentBounds.left+g.contentBounds.right)*g.scale/2-g.w/2)<.75&&Math.abs(g.y+(g.contentBounds.top+g.contentBounds.bottom)*g.scale/2-g.h/2)<.75;
  checkClass(ui.resolution,tooSmall?"bad":"ok",tooSmall?"!":"✓");ui.resolutionText.textContent=tooSmall?(tooSmallCover?t("tooSmallCover"):t("tooSmallContain")):t("sourceDimensions",{width:g.sw,height:g.sh});
  checkClass(ui.transparency,transparencyMissing?"bad":state.preset.pngOnly?"ok":"neutral",transparencyMissing?"!":state.preset.pngOnly?"✓":"•");ui.transparencyText.textContent=transparencyMissing?t("transparencyMissing"):state.preset.pngOnly?t("transparencyOk"):t("transparencyOptional");
  checkClass(ui.alignment,centered?"ok":"warn",centered?"✓":"↗");ui.alignmentText.textContent=centered?t("exactlyCentered"):t("imageMoved");
@@ -159,21 +195,36 @@ function applyLanguage(){
  const description=$("meta[name='description']");description.content=state.language==="nl"?"Maak TheTVDB-artwork met precieze uitsneden, kwaliteitscontrole en presets. Je afbeeldingen blijven op je apparaat.":"Prepare TheTVDB artwork with precise crops, quality checks and presets. Your images stay on your device.";
  document.querySelectorAll("[data-i18n]").forEach((node)=>{node.innerHTML=t(node.dataset.i18n)});
  document.querySelectorAll("[data-i18n-aria]").forEach((node)=>node.setAttribute("aria-label",t(node.dataset.i18nAria)));
- ui.language.setAttribute("aria-label",t("languageLabel"));ui.remove.setAttribute("aria-label",t("removeImage"));ui.fileState.textContent=state.image?t("fileStateLoaded"):t("fileStateEmpty");
+ ui.language.setAttribute("aria-label",t("languageLabel"));ui.remove.setAttribute("aria-label",t("removeImage"));ui.theme.setAttribute("aria-label",t(document.documentElement.dataset.theme==="dark"?"themeLightLabel":"themeDarkLabel"));ui.fileState.textContent=state.image?t("fileStateLoaded"):t("fileStateEmpty");
 }
-function detectTransparency(image){
- const canvas=document.createElement("canvas");canvas.width=64;canvas.height=64;const ctx=canvas.getContext("2d");if(!ctx)return false;
- ctx.drawImage(image,0,0,64,64);const data=ctx.getImageData(0,0,64,64).data;for(let i=3;i<data.length;i+=4)if(data[i]<250)return true;return false;
+function setTheme(theme,persist=true){
+ const dark=theme==="dark";document.documentElement.dataset.theme=dark?"dark":"light";ui.theme.setAttribute("aria-pressed",String(dark));ui.theme.setAttribute("aria-label",t(dark?"themeLightLabel":"themeDarkLabel"));
+ const themeColor=$("meta[name='theme-color']");if(themeColor)themeColor.content=dark?"#000000":"#f5f4f1";
+ if(persist)localStorage.setItem("onions-img-editor-theme",dark?"dark":"light");
+}
+function analyzeImage(image){
+ const sw=image.naturalWidth,sh=image.naturalHeight,sampleScale=Math.min(1,1024/Math.max(sw,sh)),width=Math.max(1,Math.round(sw*sampleScale)),height=Math.max(1,Math.round(sh*sampleScale));
+ const fullBounds={left:0,top:0,right:sw,bottom:sh},canvas=document.createElement("canvas");canvas.width=width;canvas.height=height;
+ const ctx=canvas.getContext("2d",{willReadFrequently:true});if(!ctx)return {hasTransparency:false,bounds:fullBounds};
+ try{
+  ctx.drawImage(image,0,0,width,height);const data=ctx.getImageData(0,0,width,height).data;let hasTransparency=false,minX=width,minY=height,maxX=-1,maxY=-1;
+  for(let y=0;y<height;y++)for(let x=0;x<width;x++){
+   const alpha=data[(y*width+x)*4+3];if(alpha<250)hasTransparency=true;
+   if(alpha>8){if(x<minX)minX=x;if(x>maxX)maxX=x;if(y<minY)minY=y;if(y>maxY)maxY=y}
+  }
+  if(maxX<minX||maxY<minY)return {hasTransparency,bounds:fullBounds};
+  return {hasTransparency,bounds:{left:minX*sw/width,top:minY*sh/height,right:(maxX+1)*sw/width,bottom:(maxY+1)*sh/height}};
+ }catch{return {hasTransparency:false,bounds:fullBounds}}
 }
 function loadImage(file){
  const allowed=["image/png","image/jpeg","image/webp","image/avif"];
  if(!file||!allowed.includes(file.type)){ui.message.textContent=t("chooseImageError");ui.message.className="export-message error";return}
  if(state.url)URL.revokeObjectURL(state.url);state.file=file;state.url=URL.createObjectURL(file);const image=new Image();
- image.onload=()=>{state.image=image;state.hasTransparency=detectTransparency(image);state.shiftX=0;state.shiftY=0;state.zoom=1;ui.image.src=state.url;ui.image.alt=file.name;ui.fileState.textContent=t("fileStateLoaded");ui.fileName.textContent=file.name;ui.fileSize.textContent=image.naturalWidth+" × "+image.naturalHeight+" px · "+bytesLabel(file.size);ui.fileDetails.hidden=false;ui.drop.hidden=true;paint();if(state.preset.id==="season-poster")autoSeasonStyle()};
+ image.onload=()=>{state.image=image;const analysis=analyzeImage(image);state.hasTransparency=analysis.hasTransparency;state.alphaBounds=analysis.bounds;state.shiftX=0;state.shiftY=0;state.zoom=1;ui.image.src=state.url;ui.image.alt=file.name;ui.fileState.textContent=t("fileStateLoaded");ui.fileName.textContent=file.name;ui.fileSize.textContent=image.naturalWidth+" × "+image.naturalHeight+" px · "+bytesLabel(file.size);ui.fileDetails.hidden=false;ui.drop.hidden=true;paint();if(state.preset.id==="season-poster")autoSeasonStyle()};
  image.onerror=()=>{ui.message.textContent=t("openImageError");ui.message.className="export-message error";URL.revokeObjectURL(state.url);state.url=null};image.src=state.url;
 }
 function removeImage(){
- if(state.url)URL.revokeObjectURL(state.url);state.url=null;state.image=null;state.file=null;state.hasTransparency=false;ui.input.value="";ui.fileDetails.hidden=true;ui.drop.hidden=false;ui.fileState.textContent=t("fileStateEmpty");state.shiftX=0;state.shiftY=0;state.zoom=1;paint();
+ if(state.url)URL.revokeObjectURL(state.url);state.url=null;state.image=null;state.file=null;state.hasTransparency=false;state.alphaBounds=null;ui.input.value="";ui.fileDetails.hidden=true;ui.drop.hidden=false;ui.fileState.textContent=t("fileStateEmpty");state.shiftX=0;state.shiftY=0;state.zoom=1;paint();
 }
 function move(dx,dy){if(!state.image)return;state.shiftX+=dx*state.preset.width*.025;state.shiftY+=dy*state.preset.height*.025;constrainPosition();paint()}
 function startDrag(e){if(!state.image)return;state.dragging=true;state.pointerX=e.clientX;state.pointerY=e.clientY;ui.board.classList.add("dragging");ui.board.setPointerCapture(e.pointerId);e.preventDefault()}
@@ -185,8 +236,8 @@ function setCustom(){
  state.preset={id:"custom",width:w,height:h,shape:w>h?"wide":"poster",mode:"cover",icon:"⌗"};state.custom=true;state.shiftX=0;state.shiftY=0;state.zoom=1;ui.seasonPanel.hidden=true;renderPresets();updateFormat();paint();
 }
 function updateFormat(){
- const jpegOption=ui.format.querySelector('option[value="jpeg"]');jpegOption.disabled=Boolean(state.preset.pngOnly);if(state.preset.pngOnly&&ui.format.value==="jpeg")ui.format.value="png";
- const jpeg=ui.format.value==="jpeg";ui.jpegOptions.hidden=!jpeg;ui.formatNote.textContent=state.preset.pngOnly?t("formatPngRequired"):jpeg?t("formatJpeg"):t("formatPng");
+ const jpegOption=ui.format.querySelector('option[value="jpeg"]'),requiresPng=Boolean(state.preset.pngOnly);jpegOption.disabled=requiresPng;if(requiresPng&&ui.format.value==="jpeg")ui.format.value="png";
+ const jpeg=ui.format.value==="jpeg";ui.jpegOptions.hidden=!jpeg;ui.formatNote.textContent=requiresPng?t("formatPngRequired"):jpeg?t("formatJpeg"):t("formatPng");
  ui.download.innerHTML=t("download",{format:ui.format.value.toUpperCase()});if(state.image)updateChecks();
 }
 function drawSeason(ctx,w,h){
@@ -219,9 +270,11 @@ ui.board.addEventListener("keydown",(e)=>{const d={ArrowLeft:[-1,0],ArrowRight:[
 document.querySelectorAll(".nudge-controls button").forEach((b)=>b.addEventListener("click",()=>move(Number(b.dataset.dx),Number(b.dataset.dy))));
 ui.seasonToggle.addEventListener("change",stampPreview);ui.seasonNumber.addEventListener("input",stampPreview);ui.stampPosition.addEventListener("change",stampPreview);ui.stampColor.addEventListener("input",stampPreview);ui.stampBackground.addEventListener("input",stampPreview);ui.stampStyle.addEventListener("change",stampPreview);
 ui.format.addEventListener("change",updateFormat);ui.jpegQuality.addEventListener("input",()=>{ui.jpegQualityValue.value=Math.round(Number(ui.jpegQuality.value)*100)+"%"});ui.download.addEventListener("click",exportImage);
+ui.theme.addEventListener("click",()=>setTheme(document.documentElement.dataset.theme==="dark"?"light":"dark"));
 ui.language.addEventListener("change",()=>{state.language=ui.language.value==="nl"?"nl":"en";localStorage.setItem("onions-img-editor-language",state.language);applyLanguage();renderPresets();updateFormat();paint();if(state.preset.id==="season-poster")autoSeasonStyle()});
 ui.drop.addEventListener("dragover",(e)=>{e.preventDefault();ui.drop.classList.add("drag-active")});ui.drop.addEventListener("dragleave",()=>ui.drop.classList.remove("drag-active"));ui.drop.addEventListener("drop",(e)=>{e.preventDefault();ui.drop.classList.remove("drag-active");loadImage(e.dataTransfer.files&&e.dataTransfer.files[0])});
 document.addEventListener("dragover",(e)=>e.preventDefault());document.addEventListener("drop",(e)=>{if(!ui.drop.contains(e.target))e.preventDefault()});
 
 const savedLanguage=localStorage.getItem("onions-img-editor-language");state.language=savedLanguage==="nl"?"nl":"en";ui.language.value=state.language;
+const savedTheme=localStorage.getItem("onions-img-editor-theme");setTheme(savedTheme==="dark"?"dark":"light",false);
 applyLanguage();renderPresets();updateFormat();paint();window.addEventListener("resize",paint);

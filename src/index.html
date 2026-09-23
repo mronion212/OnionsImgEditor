@@ -18,6 +18,7 @@
   </a>
   <div class="topbar-right">
     <span class="privacy-pill"><i></i><span data-i18n="privacyPill">Files stay on your device</span></span>
+    <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Switch to dark mode" aria-pressed="false"><span class="theme-track" aria-hidden="true"><span class="theme-track-sun">☼</span><span class="theme-track-moon">☾</span><span class="theme-thumb"><span class="theme-sun">☼</span><span class="theme-moon">☾</span></span></span></button>
     <a data-i18n="tvdbRules" href="https://support.thetvdb.com/kb/faq.php?cid=1" target="_blank" rel="noreferrer">TheTVDB guidelines ↗</a>
     <label class="language-selector"><span data-i18n="languageLabel">Language</span><select id="language-select" aria-label="Language"><option value="en">English</option><option value="nl">Nederlands</option></select></label>
   </div>
@@ -65,6 +66,19 @@
       </div>
     </div>
     <div id="guideline-card" class="guideline-card"><span class="guideline-icon">✓</span><div><strong id="guideline-title">Choose a preset to see its guidelines</strong><p id="guideline-copy">TheTVDB dimensions and artwork reminders appear here.</p></div><a id="guideline-link" href="https://support.thetvdb.com/kb/faq.php?cid=1" target="_blank" rel="noreferrer">View rules ↗</a></div>
+    <section id="clearlogo-guide" class="clearlogo-guide" hidden aria-labelledby="clearlogo-guide-title">
+      <div class="clearlogo-heading"><span class="clearlogo-mark" aria-hidden="true">PNG</span><div><h2 id="clearlogo-guide-title" data-i18n="clearlogoChecklist">ClearLogo upload checklist</h2><p data-i18n="clearlogoIntro">Check every point before exporting and uploading.</p></div></div>
+      <ol class="clearlogo-checklist">
+        <li><strong data-i18n="clearlogoCanvasTitle">Exact canvas</strong><span data-i18n="clearlogoCanvasCopy">Export at exactly 800 × 310 px. Keep the logo's proportions; never stretch it.</span></li>
+        <li><strong data-i18n="clearlogoAlphaTitle">Real transparency</strong><span data-i18n="clearlogoAlphaCopy">Use a PNG with transparent pixels around the logo. A checkerboard is only a preview; it does not prove transparency.</span></li>
+        <li><strong data-i18n="clearlogoCenterTitle">Center the visible logo</strong><span data-i18n="clearlogoCenterCopy">Center the non-transparent artwork, not the file edges. Leave 10 px clear on every side; the logo can fill up to 780 × 290 px.</span></li>
+        <li><strong data-i18n="clearlogoSizeTitle">Keep the original scale</strong><span data-i18n="clearlogoSizeCopy">Use a crisp, sufficiently large source. Do not enlarge or distort it; crop a larger image if needed.</span></li>
+        <li><strong data-i18n="clearlogoContrastTitle">Check both backgrounds</strong><span data-i18n="clearlogoContrastCopy">Make sure the logo is easy to see on light and dark backgrounds. Keep the background transparent.</span></li>
+        <li><strong data-i18n="clearlogoContentTitle">Keep it relevant</strong><span data-i18n="clearlogoContentCopy">Use only the series or movie logo. No watermarks, unrelated logos, or season/episode text on series-level artwork. Avoid duplicates and minor variants.</span></li>
+        <li><strong data-i18n="clearlogoLanguageTitle">Language and upload limit</strong><span data-i18n="clearlogoLanguageCopy">Select the primary language when the logo contains text. TheTVDB allows at most 3 ClearLogo images per series, season, or movie.</span></li>
+      </ol>
+      <p class="clearlogo-footnote" data-i18n="clearlogoFootnote">Keep the exported PNG under TheTVDB's 10 MB upload limit.</p>
+    </section>
   </section>
 
   <aside class="right-panel">
@@ -88,7 +102,7 @@
     </section>
     <section class="inspector-section">
       <div class="inspector-title"><h2 data-i18n="exportTitle">Export</h2></div>
-      <label class="field-label" for="format-select" data-i18n="fileFormat">File format</label><select id="format-select" class="select-control"><option value="png" data-i18n="pngOption">PNG · lossless</option><option value="jpeg" data-i18n="jpegOption">JPEG · smaller file</option></select>
+      <label class="field-label" for="format-select" data-i18n="fileFormat">File format</label><select id="format-select" class="select-control" aria-describedby="format-note"><option value="png" data-i18n="pngOption">PNG · lossless</option><option value="jpeg" data-i18n="jpegOption">JPEG · smaller file</option></select>
       <p id="format-note" class="format-note">PNG preserves detail and transparency without extra compression loss.</p>
       <div id="jpeg-options" hidden><label class="field-label" for="jpeg-quality"><span data-i18n="jpegQuality">JPEG quality</span><output id="jpeg-quality-value">96%</output></label><input id="jpeg-quality" type="range" min=".8" max="1" step=".01" value=".96"><label class="field-label" for="jpeg-background" data-i18n="transparentBackground">Background for transparency</label><input id="jpeg-background" class="color-input" type="color" value="#ffffff"></div>
       <button id="download-button" class="download-button" disabled>↓ &nbsp;Download PNG</button><p id="export-message" class="export-message" aria-live="polite">Add an image to export.</p>
