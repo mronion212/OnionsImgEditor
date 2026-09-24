@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="theme-color" content="#f5f4f1">
+  <meta name="theme-color" content="#ffffff">
   <meta name="description" content="Prepare TheTVDB artwork with precise crops, quality checks and presets. Your images stay on your device.">
   <title>Onion's Img Editor — TheTVDB artwork</title>
   <link rel="icon" href="./logo.svg" type="image/svg+xml">
@@ -38,11 +38,15 @@
       <div id="preset-grid" class="preset-grid" aria-label="Choose an image type"></div>
       <button id="more-presets" class="text-button" type="button">+ More TheTVDB formats</button>
       <div id="extra-presets" class="extra-presets" hidden></div>
-      <div class="custom-heading"><span data-i18n="customSize">Custom size</span><span class="custom-tag" data-i18n="customRatio">custom ratio</span></div>
-      <div class="custom-dimensions"><label><span data-i18n="width">Width</span><input id="custom-width" type="number" min="1" max="12000" value="1200"></label><span>×</span><label><span data-i18n="height">Height</span><input id="custom-height" type="number" min="1" max="12000" value="675"></label></div>
-      <button id="apply-custom" class="custom-apply" type="button" data-i18n="applySize">Apply size</button>
+      <details class="custom-size">
+        <summary class="custom-heading"><span data-i18n="customSize">Custom size</span><span class="custom-tag" data-i18n="customRatio">custom ratio</span></summary>
+        <div class="custom-body">
+          <div class="custom-dimensions"><label><span data-i18n="width">Width</span><input id="custom-width" type="number" min="1" max="12000" value="1200"></label><span>×</span><label><span data-i18n="height">Height</span><input id="custom-height" type="number" min="1" max="12000" value="675"></label></div>
+          <button id="apply-custom" class="custom-apply" type="button" data-i18n="applySize">Apply size</button>
+        </div>
+      </details>
     </section>
-    <div class="panel-tip"><b>✳</b><p><strong data-i18n="qualityTitle">Keep the original quality</strong><br><span data-i18n="qualityCopy">PNG encoding is lossless. JPEG is lossy. Cropping or resizing changes pixels, and small sources are never silently enlarged.</span></p></div>
+    <details class="panel-tip"><summary><b aria-hidden="true">i</b><strong data-i18n="qualityTitle">Keep the original quality</strong></summary><p data-i18n="qualityCopy">PNG encoding is lossless. JPEG is lossy. Cropping or resizing changes pixels, and small sources are never silently enlarged.</p></details>
   </aside>
 
   <section class="workspace">

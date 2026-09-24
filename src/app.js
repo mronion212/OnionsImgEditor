@@ -61,6 +61,15 @@ Object.assign(COPY.nl,{
  clearlogoFootnote:"Houd de geëxporteerde PNG onder de uploadlimiet van 10 MB van TheTVDB."
 });
 
+Object.assign(COPY.en,{
+ stepImage:"1 / ADD IMAGE",stepPreset:"2 / CHOOSE FORMAT",stepOutput:"3 / EXPORT",
+ canvasHint:"Drop an image here<br>or use Add an image."
+});
+Object.assign(COPY.nl,{
+ stepImage:"1 / AFBEELDING",stepPreset:"2 / KIES FORMAAT",stepOutput:"3 / EXPORTEREN",
+ canvasHint:"Sleep een afbeelding hierheen<br>of gebruik Afbeelding toevoegen."
+});
+
 const state={preset:PRESETS[0],custom:false,file:null,image:null,url:null,hasTransparency:false,alphaBounds:null,shiftX:0,shiftY:0,zoom:1,dragging:false,pointerX:0,pointerY:0,language:"en"};
 const $=(s)=>document.querySelector(s);
 const ui={
@@ -202,7 +211,7 @@ function applyLanguage(){
 }
 function setTheme(theme,persist=true){
  const dark=theme==="dark";document.documentElement.dataset.theme=dark?"dark":"light";ui.theme.setAttribute("aria-pressed",String(dark));ui.theme.setAttribute("aria-label",t(dark?"themeLightLabel":"themeDarkLabel"));
- const themeColor=$("meta[name='theme-color']");if(themeColor)themeColor.content=dark?"#000000":"#f5f4f1";
+ const themeColor=$("meta[name='theme-color']");if(themeColor)themeColor.content=dark?"#000000":"#ffffff";
  if(persist)localStorage.setItem("onions-img-editor-theme",dark?"dark":"light");
 }
 function analyzeImage(image){
@@ -275,9 +284,13 @@ ui.seasonToggle.addEventListener("change",stampPreview);ui.seasonNumber.addEvent
 ui.format.addEventListener("change",updateFormat);ui.jpegQuality.addEventListener("input",()=>{ui.jpegQualityValue.value=Math.round(Number(ui.jpegQuality.value)*100)+"%"});ui.download.addEventListener("click",exportImage);
 ui.theme.addEventListener("click",()=>setTheme(document.documentElement.dataset.theme==="dark"?"light":"dark"));
 ui.language.addEventListener("change",()=>{state.language=ui.language.value==="nl"?"nl":"en";localStorage.setItem("onions-img-editor-language",state.language);applyLanguage();renderPresets();updateFormat();paint();if(state.preset.id==="season-poster")autoSeasonStyle()});
-ui.drop.addEventListener("dragover",(e)=>{e.preventDefault();ui.drop.classList.add("drag-active")});ui.drop.addEventListener("dragleave",()=>ui.drop.classList.remove("drag-active"));ui.drop.addEventListener("drop",(e)=>{e.preventDefault();ui.drop.classList.remove("drag-active");loadImage(e.dataTransfer.files&&e.dataTransfer.files[0])});
-document.addEventListener("dragover",(e)=>e.preventDefault());document.addEventListener("drop",(e)=>{if(!ui.drop.contains(e.target))e.preventDefault()});
+for(const target of [ui.drop,ui.stage]){
+ target.addEventListener("dragover",(e)=>{e.preventDefault();target.classList.add("drag-active")});
+ target.addEventListener("dragleave",(e)=>{if(!target.contains(e.relatedTarget))target.classList.remove("drag-active")});
+ target.addEventListener("drop",(e)=>{e.preventDefault();target.classList.remove("drag-active");loadImage(e.dataTransfer.files&&e.dataTransfer.files[0])});
+}
+document.addEventListener("dragover",(e)=>e.preventDefault());document.addEventListener("drop",(e)=>{if(!ui.drop.contains(e.target)&&!ui.stage.contains(e.target))e.preventDefault()});
 
 const savedLanguage=localStorage.getItem("onions-img-editor-language");state.language=savedLanguage==="nl"?"nl":"en";ui.language.value=state.language;
 const savedTheme=localStorage.getItem("onions-img-editor-theme");setTheme(savedTheme==="dark"?"dark":"light",false);
-applyLanguage();renderPresets();updateFormat();paint();window.addEventListener("resize",paint);
+applyLanguage();renderPresets();updateFormat();paint();window.addEventListener("resize",paint);window.visualViewport?.addEventListener("resize",paint);
