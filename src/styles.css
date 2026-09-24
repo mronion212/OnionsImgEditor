@@ -108,6 +108,7 @@ html[data-theme="dark"] .theme-moon { opacity: 1; }
 }
 .left-panel, .right-panel, .workspace, .stage-card { min-width: 0; }
 .left-panel, .right-panel { overflow: hidden; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
+.left-panel { container-type: inline-size; }
 .eyebrow { color: var(--muted); font-size: .72rem; font-weight: 800; letter-spacing: .1em; }
 .tiny-status { color: var(--muted); font-size: .75rem; }
 
@@ -141,7 +142,7 @@ html[data-theme="dark"] .theme-moon { opacity: 1; }
 .preset-mini.square { height: 27px; }
 .preset-mini.season::after { position: absolute; right: 1px; bottom: 1px; content: "S1"; color: var(--accent); font-size: 8px; font-weight: 800; }
 .preset-text { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
-.preset-text strong { font-size: .87rem; line-height: 1.2; font-weight: 700; }
+.preset-text strong { font-size: .87rem; line-height: 1.2; font-weight: 700; overflow-wrap: anywhere; }
 .preset-text small { color: var(--muted); font-size: .76rem; line-height: 1.2; }
 .text-button { min-height: 42px; margin-top: 7px; padding: 0 4px; border: 0; background: transparent; color: var(--accent); font-size: .8rem; font-weight: 750; text-align: left; cursor: pointer; }
 .text-button:hover { text-decoration: underline; }
@@ -297,6 +298,11 @@ html[data-theme="dark"] .artboard { background-image: url("./checker-dark.svg");
 .page-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px clamp(18px, 1.5vw, 46px) 24px; border-top: 1px solid var(--line); color: var(--muted); font-size: .67rem; }
 .page-footer b { font-weight: 800; letter-spacing: .07em; }
 
+@container (max-width: 370px) {
+  .preset-card { min-height: 96px; flex-direction: column; align-items: flex-start; gap: 7px; }
+  .preset-text strong { overflow-wrap: normal; }
+}
+
 /* Wide screens */
 @media (min-width: 2400px) {
   .stage { min-height: clamp(900px, 80svh, 1180px); }
@@ -359,7 +365,6 @@ html[data-theme="dark"] .artboard { background-image: url("./checker-dark.svg");
   .topbar-right a { display: none; }
   .brand-mark { width: 36px; height: 36px; flex-basis: 36px; }
   .brand-copy strong { font-size: 1.08rem; }
-  .preset-card { min-height: 96px; flex-direction: column; align-items: flex-start; gap: 7px; }
   .nudge-controls { grid-template-columns: repeat(4, 40px); }
   .nudge-controls button { width: 40px; height: 40px; }
 }
