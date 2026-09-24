@@ -132,7 +132,10 @@ function geometry(){
 }
 function constrainPosition(){const g=geometry();if(!g)return;state.shiftX=g.x-g.originX;state.shiftY=g.y-g.originY}
 function sizeBoard(){
- const ratio=state.preset.width/state.preset.height,maxW=Math.max(120,Math.min(ui.stage.clientWidth-42,820)),maxH=Math.max(120,Math.min(ui.stage.clientHeight-75,580));
+ const ratio=state.preset.width/state.preset.height;
+ const viewportH=window.visualViewport?.height||window.innerHeight;
+ const maxW=Math.max(120,Math.min(ui.stage.clientWidth-48,1600));
+ const maxH=Math.max(120,Math.min(ui.stage.clientHeight-84,viewportH*.82,1200));
  let w=Math.min(maxW,maxH*ratio),h=w/ratio;if(h>maxH){h=maxH;w=h*ratio}ui.board.style.width=Math.round(w)+"px";ui.board.style.height=Math.round(h)+"px";
 }
 function hexRgba(hex,alpha){
