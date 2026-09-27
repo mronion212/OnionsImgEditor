@@ -146,9 +146,11 @@ function geometry(){
 function constrainPosition(){const g=geometry();if(!g)return;state.shiftX=g.x-g.originX;state.shiftY=g.y-g.originY}
 function sizeBoard(){
  const ratio=state.preset.width/state.preset.height;
- const viewportH=window.visualViewport?.height||window.innerHeight;
- const maxW=Math.max(120,Math.min(ui.stage.clientWidth-48,1600));
- const maxH=Math.max(120,Math.min(ui.stage.clientHeight-84,viewportH*.82,1200));
+ const style=getComputedStyle(ui.stage);
+ const caption=ui.stage.querySelector('.stage-caption');
+ const captionHeight=caption ? caption.getBoundingClientRect().height+parseFloat(getComputedStyle(caption).marginTop) : 0;
+ const maxW=Math.max(1,ui.stage.clientWidth-parseFloat(style.paddingLeft)-parseFloat(style.paddingRight));
+ const maxH=Math.max(1,ui.stage.clientHeight-parseFloat(style.paddingTop)-parseFloat(style.paddingBottom)-captionHeight);
  let w=Math.min(maxW,maxH*ratio),h=w/ratio;if(h>maxH){h=maxH;w=h*ratio}ui.board.style.width=Math.round(w)+"px";ui.board.style.height=Math.round(h)+"px";
 }
 function hexRgba(hex,alpha){
@@ -310,5 +312,8 @@ for(const target of [ui.drop,ui.stage]){
 document.addEventListener("dragover",(e)=>e.preventDefault());document.addEventListener("drop",(e)=>{if(!ui.drop.contains(e.target)&&!ui.stage.contains(e.target))e.preventDefault()});
 
 const savedLanguage=localStorage.getItem("onions-img-editor-language");state.language=savedLanguage==="nl"?"nl":"en";ui.language.value=state.language;
-const savedTheme=localStorage.getItem("onions-img-editor-theme");setTheme(savedTheme==="dark"?"dark":"light",false);
+const savedTheme=localStorage.getItem("onions-img-editor-theme");setTheme(savedTheme==="light"?"light":"dark",false);
 applyLanguage();renderPresets();updateFormat();paint();window.addEventListener("resize",paint);window.visualViewport?.addEventListener("resize",paint);
+
+// Refit after container changes as well as viewport changes.
+new ResizeObserver(()=>paint()).observe(ui.stage);
