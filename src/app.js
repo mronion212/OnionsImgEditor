@@ -69,8 +69,12 @@ Object.assign(COPY.nl,{
  stepImage:"1 / AFBEELDING",stepPreset:"2 / KIES FORMAAT",stepOutput:"3 / EXPORTEREN",
  canvasHint:"Sleep een afbeelding hierheen<br>of gebruik Afbeelding toevoegen."
 });
+Object.assign(COPY.en,{position_custom:"Custom position",dragLabelHint:"Drag the label on the poster to place it exactly where it fits.",transparentBadge:"Transparent badge background",allowUpscale:"Resize anyway (not for TheTVDB)",upscaleNote:"This happens locally and adds pixels, but cannot restore detail. TheTVDB does not allow upscaled artwork.",upscaleWarning:"Resized upward. TheTVDB does not allow upscaled artwork.",upscaleRequired:"This crop needs more pixels. Choose a larger source or explicitly allow resizing.",stampAria:"Drag the season label, or use the arrow keys to move it."});
+Object.assign(COPY.nl,{position_custom:"Vrij plaatsen",dragLabelHint:"Sleep het label op de poster naar de plek waar het het beste past.",transparentBadge:"Transparante labelachtergrond",allowUpscale:"Toch vergroten (niet voor TheTVDB)",upscaleNote:"Dit gebeurt lokaal en voegt pixels toe, maar herstelt geen details. TheTVDB staat opgeschaald artwork niet toe.",upscaleWarning:"Opgeschaald. TheTVDB staat dit artwork niet toe.",upscaleRequired:"Deze uitsnede heeft meer pixels nodig. Kies een grotere bron of schakel vergroten bewust in.",stampAria:"Sleep het seizoenslabel of verplaats het met de pijltjestoetsen."});
+Object.assign(COPY.en,{pageTitle:"Prepare your artwork",pageIntro:"Choose a size, place the image and check the result.",qualityCopy:"PNG avoids extra encoding loss. Resizing changes pixels and cannot create new detail.","guide_poster":"680 × 1000 px. Choose artwork that represents the entire series. Keep text and key details inside the frame.","guide_season-poster":"680 × 1000 px. Use imagery that fits the season. Place the season label where it stays clear of the title and main subject."});
+Object.assign(COPY.nl,{pageTitle:"Maak je artwork klaar",pageIntro:"Kies een formaat, plaats de afbeelding en controleer het resultaat.",qualityCopy:"PNG voegt geen coderingsverlies toe. Vergroten verandert pixels en creëert geen nieuwe details.","guide_poster":"680 × 1000 px. Kies artwork dat de hele serie weergeeft. Houd tekst en belangrijke details binnen het kader.","guide_season-poster":"680 × 1000 px. Gebruik passend beeld voor dit seizoen. Zet het seizoenslabel vrij van de titel en het hoofdonderwerp."});
 
-const state={preset:PRESETS[0],custom:false,file:null,image:null,url:null,hasTransparency:false,alphaBounds:null,shiftX:0,shiftY:0,zoom:1,dragging:false,pointerX:0,pointerY:0,language:"en"};
+const state={preset:PRESETS[0],custom:false,file:null,image:null,url:null,hasTransparency:false,alphaBounds:null,shiftX:0,shiftY:0,zoom:1,dragging:false,pointerX:0,pointerY:0,stampX:.05,stampY:.05,stampDragging:false,stampPointerX:0,stampPointerY:0,language:"en"};
 const $=(s)=>document.querySelector(s);
 const ui={
  input:$("#file-input"),drop:$("#drop-zone"),fileState:$("#file-state"),fileDetails:$("#file-details"),fileName:$("#file-name"),fileSize:$("#file-size"),remove:$("#remove-image"),language:$("#language-select"),theme:$("#theme-toggle"),
@@ -80,7 +84,7 @@ const ui={
  centerStatus:$("#center-status"),centerText:$("#center-status-text"),center:$("#center-image"),zoom:$("#zoom-slider"),zoomValue:$("#zoom-value"),
  resolution:$("#resolution-check"),resolutionText:$("#resolution-copy"),transparency:$("#transparency-check"),transparencyText:$("#transparency-copy"),alignment:$("#alignment-check"),alignmentText:$("#alignment-copy"),limit:$("#file-limit-check"),limitText:$("#file-limit-copy"),
  guide:$("#guideline-card"),guideTitle:$("#guideline-title"),guideCopy:$("#guideline-copy"),guideLink:$("#guideline-link"),clearlogoGuide:$("#clearlogo-guide"),
- seasonPanel:$("#season-panel"),seasonToggle:$("#season-toggle"),seasonNumber:$("#season-number"),stampPosition:$("#stamp-position"),stampColor:$("#stamp-color"),stampBackground:$("#stamp-background-color"),stampStyle:$("#stamp-style"),autoStyle:$("#auto-season-style"),autoStatus:$("#season-auto-status"),
+ seasonPanel:$("#season-panel"),seasonToggle:$("#season-toggle"),seasonNumber:$("#season-number"),stampPosition:$("#stamp-position"),stampColor:$("#stamp-color"),stampBackground:$("#stamp-background-color"),stampTransparent:$("#stamp-transparent"),stampStyle:$("#stamp-style"),autoStyle:$("#auto-season-style"),autoStatus:$("#season-auto-status"),upscaleOption:$("#upscale-option"),allowUpscale:$("#allow-upscale"),
  format:$("#format-select"),formatNote:$("#format-note"),jpegOptions:$("#jpeg-options"),jpegQuality:$("#jpeg-quality"),jpegQualityValue:$("#jpeg-quality-value"),jpegBackground:$("#jpeg-background"),
  download:$("#download-button"),message:$("#export-message")
 };
@@ -110,7 +114,7 @@ function renderPresets(){
  ui.more.textContent=ui.extra.hidden?t("morePresets"):t("fewerPresets");
 }
 function choosePreset(p){
- state.preset=p;state.custom=false;state.shiftX=0;state.shiftY=0;state.zoom=1;ui.seasonPanel.hidden=p.id!=="season-poster";
+ state.preset=p;state.custom=false;state.shiftX=0;state.shiftY=0;state.zoom=1;ui.allowUpscale.checked=false;ui.seasonPanel.hidden=p.id!=="season-poster";
  if(p.id==="season-poster")ui.seasonToggle.checked=true;renderPresets();updateFormat();paint();if(p.id==="season-poster")autoSeasonStyle();
 }
 function updatePresetInfo(){
@@ -118,7 +122,7 @@ function updatePresetInfo(){
  ui.dimensions.textContent=p.width+" × "+p.height+" px";ui.outputSize.innerHTML=p.width+" <i>×</i> "+p.height;ui.seasonPanel.hidden=p.id!=="season-poster";
  ui.guideTitle.textContent=state.custom?t("customTitle"):p.width+" × "+p.height+" px · "+presetLabel(p);
  ui.clearlogoGuide.hidden=state.custom||p.id!=="clearlogo";
- ui.guideCopy.textContent=state.custom?t("customGuideline"):p.id==="clearlogo"?t("clearlogoSummary"):t("guide_"+p.id)+" "+t("generalGuidelines");
+ ui.guideCopy.textContent=state.custom?t("customGuideline"):p.id==="clearlogo"?t("clearlogoSummary"):t("guide_"+p.id);
  ui.guideLink.href="https://support.thetvdb.com/kb/faq.php?id="+(state.custom?"1":p.faq);ui.guideLink.textContent=state.custom?t("generalRules"):t("viewRules");ui.guide.classList.remove("warning","error");
 }
 function geometry(){
@@ -127,7 +131,7 @@ function geometry(){
  const bounds=p.id==="clearlogo"&&state.alphaBounds?state.alphaBounds:{left:0,top:0,right:sw,bottom:sh};
  const contentW=bounds.right-bounds.left,contentH=bounds.bottom-bounds.top;
  const idealScale=p.mode==="contain"?Math.min((w-2*(p.gutter||0))/contentW,(h-2*(p.gutter||0))/contentH):Math.max(w/sw,h/sh);
- let base=idealScale;if(p.mode==="contain")base=Math.min(1,base);
+ let base=idealScale;if(p.mode==="contain"&&!ui.allowUpscale.checked)base=Math.min(1,base);
  const scale=base*state.zoom,dw=sw*scale,dh=sh*scale;
  const originX=p.id==="clearlogo"?(w-contentW*scale)/2-bounds.left*scale:(w-dw)/2;
  const originY=p.id==="clearlogo"?(h-contentH*scale)/2-bounds.top*scale:(h-dh)/2;
@@ -151,48 +155,57 @@ function hexRgba(hex,alpha){
  const parts=String(hex).replace("#","").match(/^([\da-f]{2})([\da-f]{2})([\da-f]{2})$/i);
  return parts?"rgba("+parseInt(parts[1],16)+","+parseInt(parts[2],16)+","+parseInt(parts[3],16)+","+alpha+")":"rgba(23,20,28,"+alpha+")";
 }
+function stampCoordinates(w,h,bw,bh){
+ const pos=ui.stampPosition.value,margin=w*.05;
+ if(pos==="custom")return {x:Math.max(0,Math.min(w-bw,state.stampX*w)),y:Math.max(0,Math.min(h-bh,state.stampY*h))};
+ return {x:pos.endsWith("center")?(w-bw)/2:pos.endsWith("right")?w-margin-bw:margin,y:pos.startsWith("top")?margin:h-margin-bh};
+}
 function stampPreview(){
  const shown=state.preset.id==="season-poster"&&ui.seasonToggle.checked;ui.stamp.hidden=!shown;if(!shown)return;
  const n=Math.max(0,Math.min(99,Number(ui.seasonNumber.value)||0));ui.seasonNumber.value=String(n);ui.stamp.textContent=t("seasonPrefix")+" "+n;
- ui.stamp.className="season-stamp position-"+ui.stampPosition.value;ui.stamp.style.color=ui.stampColor.value;ui.stamp.style.backgroundColor=hexRgba(ui.stampBackground.value,.9);
- const fonts={sans:'Inter,"Segoe UI",Arial,sans-serif',serif:'Georgia,"Times New Roman",serif',condensed:'"Arial Narrow","Segoe UI",sans-serif'};
- ui.stamp.style.fontFamily=fonts[ui.stampStyle.value]||fonts.sans;ui.stamp.style.fontSize=Math.max(8,state.preset.width*.038*(ui.board.clientWidth/state.preset.width))+"px";
+ ui.stamp.className="season-stamp"+(ui.stampTransparent.checked?" transparent":"");ui.stamp.style.color=ui.stampColor.value;ui.stamp.style.backgroundColor=ui.stampTransparent.checked?"transparent":hexRgba(ui.stampBackground.value,.92);
+ const fonts={sans:'Arial,"Segoe UI",sans-serif',serif:'Georgia,"Times New Roman",serif',condensed:'"Arial Narrow",Arial,sans-serif'};
+ ui.stamp.style.fontFamily=fonts[ui.stampStyle.value]||fonts.sans;ui.stamp.style.fontSize=(state.preset.width*.038*(ui.board.clientWidth/state.preset.width))+"px";
+ const {x,y}=stampCoordinates(ui.board.clientWidth,ui.board.clientHeight,ui.stamp.offsetWidth,ui.stamp.offsetHeight);
+ ui.stamp.style.left=x+"px";ui.stamp.style.top=y+"px";ui.stamp.style.right="auto";ui.stamp.style.bottom="auto";ui.stamp.style.transform="none";
 }
 function autoSeasonStyle(){
  if(!state.image){ui.autoStatus.textContent=t("autoNeedsImage");return}
  try{
-  const g=geometry(),canvas=document.createElement("canvas");canvas.width=120;canvas.height=176;const ctx=canvas.getContext("2d",{willReadFrequently:true});if(!ctx)throw new Error("Canvas unavailable");
-  ctx.fillStyle="#d8d6dc";ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(state.image,g.x,g.y,g.dw,g.dh,0,0,canvas.width,canvas.height);
-  const regions=[
-   {value:"top-left",x:6,y:6,w:38,h:26},{value:"top-right",x:76,y:6,w:38,h:26},{value:"bottom-left",x:6,y:144,w:38,h:26},
-   {value:"bottom-right",x:76,y:144,w:38,h:26},{value:"top-center",x:41,y:6,w:38,h:26},{value:"bottom-center",x:41,y:144,w:38,h:26}
-  ];let best=null;
-  for(const region of regions){
-   const data=ctx.getImageData(region.x,region.y,region.w,region.h).data;let count=0,sumL=0,sumL2=0,sumR=0,sumG=0,sumB=0;
-   for(let i=0;i<data.length;i+=16){const r=data[i],green=data[i+1],b=data[i+2],l=.2126*r+.7152*green+.0722*b;count++;sumL+=l;sumL2+=l*l;sumR+=r;sumG+=green;sumB+=b}
-   const mean=sumL/count,variance=Math.max(0,sumL2/count-mean*mean);if(!best||variance<best.variance)best={...region,variance,mean,r:Math.round(sumR/count),g:Math.round(sumG/count),b:Math.round(sumB/count)};
+  const g=geometry(),canvas=document.createElement("canvas");canvas.width=340;canvas.height=500;const ctx=canvas.getContext("2d",{willReadFrequently:true});if(!ctx)throw new Error("Canvas unavailable");
+  ctx.fillStyle="#d8d6dc";ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(state.image,g.x*canvas.width/g.w,g.y*canvas.height/g.h,g.dw*canvas.width/g.w,g.dh*canvas.height/g.h);
+  ctx.font="700 13px Arial";const label=t("seasonPrefix")+" "+Math.max(0,Math.min(99,Number(ui.seasonNumber.value)||0)),bw=Math.ceil(ctx.measureText(label).width+20),bh=25;
+  let best=null;
+  for(const value of ["bottom-left","bottom-center","bottom-right","top-left","top-center","top-right"]){
+   const old=ui.stampPosition.value;ui.stampPosition.value=value;const point=stampCoordinates(canvas.width,canvas.height,bw,bh);ui.stampPosition.value=old;
+   const x=Math.max(0,Math.floor(point.x-3)),y=Math.max(0,Math.floor(point.y-3)),w=Math.min(canvas.width-x,bw+6),h=Math.min(canvas.height-y,bh+6);
+   const data=ctx.getImageData(x,y,w,h).data;let count=0,sumL=0,sumL2=0,sumR=0,sumG=0,sumB=0,edges=0,previous=0;
+   for(let i=0;i<data.length;i+=12){const r=data[i],green=data[i+1],b=data[i+2],l=.2126*r+.7152*green+.0722*b;count++;sumL+=l;sumL2+=l*l;sumR+=r;sumG+=green;sumB+=b;edges+=Math.abs(l-previous);previous=l}
+   const mean=sumL/count,variance=Math.max(0,sumL2/count-mean*mean),score=Math.sqrt(variance)+edges/count*.18+(value.startsWith("top")?16:0);
+   if(!best||score<best.score)best={value,score,mean,r:Math.round(sumR/count),g:Math.round(sumG/count),b:Math.round(sumB/count)};
   }
   ui.stampPosition.value=best.value;ui.stampBackground.value="#"+[best.r,best.g,best.b].map((v)=>v.toString(16).padStart(2,"0")).join("");ui.stampColor.value=best.mean>148?"#17141c":"#ffffff";
-  ui.autoStatus.textContent=t("autoStatus",{position:t("position_"+best.value)});stampPreview();
+  ui.autoStatus.textContent=t("autoStatus",{position:t("position_"+best.value.replaceAll("-","_"))});stampPreview();
  }catch{ui.autoStatus.textContent=t("autoFailed")}
 }
 function checkClass(node,name,symbol){node.classList.remove("neutral","ok","warn","bad");node.classList.add(name);node.querySelector(".check-symbol").textContent=symbol}
 function updateChecks(){
  if(!state.image){
   checkClass(ui.resolution,"neutral","•");ui.resolutionText.textContent=t("addImageCheck");checkClass(ui.transparency,"neutral","•");ui.transparencyText.textContent=t("transparencyOptional");checkClass(ui.alignment,"neutral","•");ui.alignmentText.textContent=t("centeredOnCanvas");
-  checkClass(ui.limit,"neutral","•");ui.limitText.textContent=t("tvdbLimit");ui.centerStatus.classList.remove("off-center");ui.centerText.textContent=t("centered");ui.download.disabled=true;ui.message.textContent=t("addImageToExport");ui.message.className="export-message";return;
+  checkClass(ui.limit,"neutral","•");ui.limitText.textContent=t("tvdbLimit");ui.centerStatus.classList.remove("off-center");ui.centerText.textContent=t("centered");ui.upscaleOption.hidden=true;ui.download.disabled=true;ui.message.textContent=t("addImageToExport");ui.message.className="export-message";return;
  }
  const g=geometry(),tooSmallCover=g.mode==="cover"&&g.scale>1.0001,tooSmallContain=g.mode==="contain"&&(g.sw<g.w||g.sh<g.h),tooSmall=tooSmallCover||tooSmallContain,transparencyMissing=state.preset.pngOnly&&!state.hasTransparency;
  const centered=Math.abs(g.x+(g.contentBounds.left+g.contentBounds.right)*g.scale/2-g.w/2)<.75&&Math.abs(g.y+(g.contentBounds.top+g.contentBounds.bottom)*g.scale/2-g.h/2)<.75;
- checkClass(ui.resolution,tooSmall?"bad":"ok",tooSmall?"!":"✓");ui.resolutionText.textContent=tooSmall?(tooSmallCover?t("tooSmallCover"):t("tooSmallContain")):t("sourceDimensions",{width:g.sw,height:g.sh});
+ ui.upscaleOption.hidden=!tooSmall;
+ checkClass(ui.resolution,tooSmall?(ui.allowUpscale.checked?"warn":"bad"):"ok",tooSmall?"!":"✓");ui.resolutionText.textContent=tooSmall?(ui.allowUpscale.checked?t("upscaleWarning"):(tooSmallCover?t("tooSmallCover"):t("tooSmallContain"))):t("sourceDimensions",{width:g.sw,height:g.sh});
  checkClass(ui.transparency,transparencyMissing?"bad":state.preset.pngOnly?"ok":"neutral",transparencyMissing?"!":state.preset.pngOnly?"✓":"•");ui.transparencyText.textContent=transparencyMissing?t("transparencyMissing"):state.preset.pngOnly?t("transparencyOk"):t("transparencyOptional");
  checkClass(ui.alignment,centered?"ok":"warn",centered?"✓":"↗");ui.alignmentText.textContent=centered?t("exactlyCentered"):t("imageMoved");
  ui.centerStatus.classList.toggle("off-center",!centered);ui.centerText.textContent=centered?t("centered"):t("moved");
  const limit=state.file.size<=10*1024*1024;checkClass(ui.limit,limit?"ok":"warn",limit?"✓":"!");
- ui.limitText.textContent=limit?t("under10",{size:bytesLabel(state.file.size)}):t("checkExportSize",{size:bytesLabel(state.file.size)});ui.download.disabled=tooSmall||transparencyMissing;
+ ui.limitText.textContent=limit?t("under10",{size:bytesLabel(state.file.size)}):t("checkExportSize",{size:bytesLabel(state.file.size)});ui.download.disabled=(tooSmall&&!ui.allowUpscale.checked)||transparencyMissing;
  if(transparencyMissing){ui.message.textContent=t("transparencyMissing");ui.message.className="export-message error";ui.guide.classList.add("error");ui.guideTitle.textContent=t("transparencyMissing")}
- else if(tooSmall){ui.message.textContent=tooSmallCover?t("upscaleBlocked"):t("underfilledSource");ui.message.className="export-message error";ui.guide.classList.add("error");ui.guideTitle.textContent=tooSmallCover?t("tooSmallCover"):t("tooSmallContain")}
- else{ui.message.textContent=state.file.size>10*1024*1024?t("sourceFileBig"):t("readyToExport",{format:ui.format.value.toUpperCase()});ui.message.className=state.file.size>10*1024*1024?"export-message warning":"export-message";updatePresetInfo()}
+ else if(tooSmall&&!ui.allowUpscale.checked){ui.message.textContent=t("upscaleRequired");ui.message.className="export-message warning";ui.guide.classList.add("warning");ui.guideTitle.textContent=t("upscaleRequired")}
+ else{ui.message.textContent=tooSmall?t("upscaleWarning"):state.file.size>10*1024*1024?t("sourceFileBig"):t("readyToExport",{format:ui.format.value.toUpperCase()});ui.message.className=tooSmall||state.file.size>10*1024*1024?"export-message warning":"export-message";if(tooSmall)ui.guide.classList.add("warning")}
 }
 function paint(){
  updatePresetInfo();sizeBoard();ui.board.setAttribute("aria-label",t("boardAria"));
@@ -207,7 +220,7 @@ function applyLanguage(){
  const description=$("meta[name='description']");description.content=state.language==="nl"?"Maak TheTVDB-artwork met precieze uitsneden, kwaliteitscontrole en presets. Je afbeeldingen blijven op je apparaat.":"Prepare TheTVDB artwork with precise crops, quality checks and presets. Your images stay on your device.";
  document.querySelectorAll("[data-i18n]").forEach((node)=>{node.innerHTML=t(node.dataset.i18n)});
  document.querySelectorAll("[data-i18n-aria]").forEach((node)=>node.setAttribute("aria-label",t(node.dataset.i18nAria)));
- ui.language.setAttribute("aria-label",t("languageLabel"));ui.remove.setAttribute("aria-label",t("removeImage"));ui.theme.setAttribute("aria-label",t(document.documentElement.dataset.theme==="dark"?"themeLightLabel":"themeDarkLabel"));ui.fileState.textContent=state.image?t("fileStateLoaded"):t("fileStateEmpty");
+ ui.language.setAttribute("aria-label",t("languageLabel"));ui.remove.setAttribute("aria-label",t("removeImage"));ui.stamp.setAttribute("aria-label",t("stampAria"));ui.theme.setAttribute("aria-label",t(document.documentElement.dataset.theme==="dark"?"themeLightLabel":"themeDarkLabel"));ui.fileState.textContent=state.image?t("fileStateLoaded"):t("fileStateEmpty");
 }
 function setTheme(theme,persist=true){
  const dark=theme==="dark";document.documentElement.dataset.theme=dark?"dark":"light";ui.theme.setAttribute("aria-pressed",String(dark));ui.theme.setAttribute("aria-label",t(dark?"themeLightLabel":"themeDarkLabel"));
@@ -232,7 +245,7 @@ function loadImage(file){
  const allowed=["image/png","image/jpeg","image/webp","image/avif"];
  if(!file||!allowed.includes(file.type)){ui.message.textContent=t("chooseImageError");ui.message.className="export-message error";return}
  if(state.url)URL.revokeObjectURL(state.url);state.file=file;state.url=URL.createObjectURL(file);const image=new Image();
- image.onload=()=>{state.image=image;const analysis=analyzeImage(image);state.hasTransparency=analysis.hasTransparency;state.alphaBounds=analysis.bounds;state.shiftX=0;state.shiftY=0;state.zoom=1;ui.image.src=state.url;ui.image.alt=file.name;ui.fileState.textContent=t("fileStateLoaded");ui.fileName.textContent=file.name;ui.fileSize.textContent=image.naturalWidth+" × "+image.naturalHeight+" px · "+bytesLabel(file.size);ui.fileDetails.hidden=false;ui.drop.hidden=true;paint();if(state.preset.id==="season-poster")autoSeasonStyle()};
+ image.onload=()=>{state.image=image;const analysis=analyzeImage(image);state.hasTransparency=analysis.hasTransparency;state.alphaBounds=analysis.bounds;state.shiftX=0;state.shiftY=0;state.zoom=1;ui.allowUpscale.checked=false;ui.image.src=state.url;ui.image.alt=file.name;ui.fileState.textContent=t("fileStateLoaded");ui.fileName.textContent=file.name;ui.fileSize.textContent=image.naturalWidth+" × "+image.naturalHeight+" px · "+bytesLabel(file.size);ui.fileDetails.hidden=false;ui.drop.hidden=true;paint();if(state.preset.id==="season-poster")autoSeasonStyle()};
  image.onerror=()=>{ui.message.textContent=t("openImageError");ui.message.className="export-message error";URL.revokeObjectURL(state.url);state.url=null};image.src=state.url;
 }
 function removeImage(){
@@ -245,7 +258,7 @@ function setCustom(){
  const w=Math.round(Number(ui.customW.value)),h=Math.round(Number(ui.customH.value));
  if(!Number.isFinite(w)||!Number.isFinite(h)||w<1||h<1||w>12000||h>12000){ui.message.textContent=t("customSizeError");ui.message.className="export-message error";return}
  if(w*h>40000000){ui.message.textContent=t("customTooLarge");ui.message.className="export-message error";return}
- state.preset={id:"custom",width:w,height:h,shape:w>h?"wide":"poster",mode:"cover",icon:"⌗"};state.custom=true;state.shiftX=0;state.shiftY=0;state.zoom=1;ui.seasonPanel.hidden=true;renderPresets();updateFormat();paint();
+ state.preset={id:"custom",width:w,height:h,shape:w>h?"wide":"poster",mode:"cover",icon:"⌗"};state.custom=true;state.shiftX=0;state.shiftY=0;state.zoom=1;ui.allowUpscale.checked=false;ui.seasonPanel.hidden=true;renderPresets();updateFormat();paint();
 }
 function updateFormat(){
  const jpegOption=ui.format.querySelector('option[value="jpeg"]'),requiresPng=Boolean(state.preset.pngOnly);jpegOption.disabled=requiresPng;if(requiresPng&&ui.format.value==="jpeg")ui.format.value="png";
@@ -254,12 +267,12 @@ function updateFormat(){
 }
 function drawSeason(ctx,w,h){
  if(state.preset.id!=="season-poster"||!ui.seasonToggle.checked)return;
- const n=Math.max(0,Math.min(99,Number(ui.seasonNumber.value)||0)),text=t("seasonPrefix")+" "+n,size=Math.max(22,Math.round(w*.038));
- const family=ui.stampStyle.value==="serif"?'Georgia, "Times New Roman", serif':ui.stampStyle.value==="condensed"?'"Arial Narrow", "Segoe UI", sans-serif':'Inter, "Segoe UI", Arial, sans-serif';
+ const n=Math.max(0,Math.min(99,Number(ui.seasonNumber.value)||0)),text=t("seasonPrefix")+" "+n,size=w*.038;
+ const family=ui.stampStyle.value==="serif"?'Georgia, "Times New Roman", serif':ui.stampStyle.value==="condensed"?'"Arial Narrow", Arial, sans-serif':'Arial, "Segoe UI", sans-serif';
  ctx.save();ctx.font="700 "+size+"px "+family;ctx.textBaseline="middle";
- const px=Math.round(size*.75),py=Math.round(size*.44),tw=ctx.measureText(text).width,bw=tw+px*2,bh=size+py*2,margin=Math.round(w*.05);let x=margin,y=h-margin-bh,pos=ui.stampPosition.value;
- if(pos.endsWith("center"))x=(w-bw)/2;if(pos.endsWith("right"))x=w-margin-bw;if(pos.startsWith("top"))y=margin;
- const radius=Math.round(size*.28);ctx.fillStyle=hexRgba(ui.stampBackground.value,.9);ctx.beginPath();ctx.roundRect(x,y,bw,bh,radius);ctx.fill();ctx.fillStyle=ui.stampColor.value;ctx.fillText(text,x+px,y+bh/2);ctx.restore();
+ const px=size*.75,py=size*.44,tw=ctx.measureText(text).width,bw=tw+px*2,bh=size+py*2,{x,y}=stampCoordinates(w,h,bw,bh);
+ if(!ui.stampTransparent.checked){const radius=size*.28;ctx.fillStyle=hexRgba(ui.stampBackground.value,.92);ctx.beginPath();ctx.roundRect(x,y,bw,bh,radius);ctx.fill()}
+ ctx.fillStyle=ui.stampColor.value;if(ui.stampTransparent.checked){ctx.shadowColor="rgba(0,0,0,.45)";ctx.shadowBlur=size*.2;ctx.shadowOffsetY=size*.05}ctx.fillText(text,x+px,y+bh/2);ctx.restore();
 }
 function exportImage(){
  if(!state.image||ui.download.disabled)return;const g=geometry(),canvas=document.createElement("canvas");canvas.width=g.w;canvas.height=g.h;
@@ -280,7 +293,12 @@ ui.zoom.addEventListener("input",()=>{state.zoom=Number(ui.zoom.value);constrain
 ui.board.addEventListener("pointerdown",startDrag);ui.board.addEventListener("pointermove",drag);ui.board.addEventListener("pointerup",()=>{state.dragging=false;ui.board.classList.remove("dragging")});ui.board.addEventListener("pointercancel",()=>{state.dragging=false;ui.board.classList.remove("dragging")});
 ui.board.addEventListener("keydown",(e)=>{const d={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]};if(!d[e.key])return;e.preventDefault();move(d[e.key][0],d[e.key][1])});
 document.querySelectorAll(".nudge-controls button").forEach((b)=>b.addEventListener("click",()=>move(Number(b.dataset.dx),Number(b.dataset.dy))));
-ui.seasonToggle.addEventListener("change",stampPreview);ui.seasonNumber.addEventListener("input",stampPreview);ui.stampPosition.addEventListener("change",stampPreview);ui.stampColor.addEventListener("input",stampPreview);ui.stampBackground.addEventListener("input",stampPreview);ui.stampStyle.addEventListener("change",stampPreview);
+ui.seasonToggle.addEventListener("change",stampPreview);ui.seasonNumber.addEventListener("input",()=>{ui.autoStatus.textContent="";stampPreview()});ui.stampPosition.addEventListener("change",()=>{ui.autoStatus.textContent="";stampPreview()});ui.stampColor.addEventListener("input",stampPreview);ui.stampBackground.addEventListener("input",stampPreview);ui.stampTransparent.addEventListener("change",stampPreview);ui.stampStyle.addEventListener("change",stampPreview);
+ui.stamp.addEventListener("pointerdown",(e)=>{if(!state.image)return;e.stopPropagation();e.preventDefault();state.stampDragging=true;state.stampPointerX=e.clientX;state.stampPointerY=e.clientY;ui.stamp.setPointerCapture(e.pointerId)});
+ui.stamp.addEventListener("pointermove",(e)=>{if(!state.stampDragging)return;const rect=ui.board.getBoundingClientRect(),point=stampCoordinates(rect.width,rect.height,ui.stamp.offsetWidth,ui.stamp.offsetHeight);state.stampX=(point.x+e.clientX-state.stampPointerX)/rect.width;state.stampY=(point.y+e.clientY-state.stampPointerY)/rect.height;state.stampPointerX=e.clientX;state.stampPointerY=e.clientY;ui.stampPosition.value="custom";ui.autoStatus.textContent="";stampPreview()});
+for(const event of ["pointerup","pointercancel"])ui.stamp.addEventListener(event,()=>{state.stampDragging=false});
+ui.stamp.addEventListener("keydown",(e)=>{const d={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]};if(!d[e.key])return;e.preventDefault();e.stopPropagation();const point=stampCoordinates(ui.board.clientWidth,ui.board.clientHeight,ui.stamp.offsetWidth,ui.stamp.offsetHeight);state.stampX=(point.x+d[e.key][0]*(e.shiftKey?10:2))/ui.board.clientWidth;state.stampY=(point.y+d[e.key][1]*(e.shiftKey?10:2))/ui.board.clientHeight;ui.stampPosition.value="custom";ui.autoStatus.textContent="";stampPreview()});
+ui.allowUpscale.addEventListener("change",()=>{constrainPosition();paint()});
 ui.format.addEventListener("change",updateFormat);ui.jpegQuality.addEventListener("input",()=>{ui.jpegQualityValue.value=Math.round(Number(ui.jpegQuality.value)*100)+"%"});ui.download.addEventListener("click",exportImage);
 ui.theme.addEventListener("click",()=>setTheme(document.documentElement.dataset.theme==="dark"?"light":"dark"));
 ui.language.addEventListener("change",()=>{state.language=ui.language.value==="nl"?"nl":"en";localStorage.setItem("onions-img-editor-language",state.language);applyLanguage();renderPresets();updateFormat();paint();if(state.preset.id==="season-poster")autoSeasonStyle()});

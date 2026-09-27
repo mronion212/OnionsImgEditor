@@ -43,14 +43,14 @@ npm run build
 - English by default, with a language selector for Dutch.
 - TheTVDB presets for posters, season posters, backgrounds, ClearLogos, banners, icons, ClearArt, and HD or SD episode images.
 - Drag, keyboard, nudge buttons, zoom, and clear center-alignment feedback.
-- Season label with automatic placement in a low-detail area, sampled colors for contrast, and manual position, color, and type controls.
+- Season label with automatic placement in a quiet lower or upper area, sampled colors for contrast, free drag positioning, transparent background, and manual color and type controls.
 - Transparent PNG is required for ClearLogo and ClearArt presets; JPEG is disabled for those types.
-- Source-resolution checks, TheTVDB's 10 MB upload-size guidance, and links to the official artwork rules.
+- Source-resolution checks, an explicit local resize option for undersized artwork, TheTVDB's 10 MB upload-size guidance, and links to the official artwork rules.
 - Image processing happens in the browser. Images are not sent to this app or stored by it.
 
 ## Image quality
 
-PNG encoding preserves the exported pixels without additional compression loss. JPEG encoding is lossy. Cropping discards pixels outside the frame, and resizing resamples pixels; neither can guarantee that no image detail changes. The editor does not silently upscale an undersized source, and export is blocked when the source does not meet the selected preset's minimum dimensions.
+PNG encoding preserves the exported pixels without additional compression loss. JPEG encoding is lossy. Cropping discards pixels outside the frame, and resizing resamples pixels; neither can guarantee that no image detail changes. An undersized source blocks export by default. You can explicitly allow browser-based resizing to the chosen canvas size; this is standard interpolation, not AI restoration. It cannot recover missing detail. TheTVDB's general artwork guidelines prohibit upscaling, so use a resized export for other destinations or drafts rather than uploading it there. Images still remain in the browser.
 
 The season-label placement is a visual heuristic that samples quieter corners and chooses a contrasting badge color. Review the result manually. A season label by itself does not make a poster season-specific.
 
