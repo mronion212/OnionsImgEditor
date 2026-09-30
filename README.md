@@ -24,6 +24,16 @@ Stop the app with:
 docker compose down
 ~~~
 
+### Updating an editor in a shared VPS Compose project
+
+Use the complete existing project configuration and explicitly disable orphan removal. An environment setting such as `COMPOSE_REMOVE_ORPHANS=true` can otherwise remove sibling containers when Compose is run with only the editor's standalone file. Target only the editor service and use `--no-deps` to avoid restarting its neighbors. For this VPS installation:
+
+~~~sh
+sudo env COMPOSE_REMOVE_ORPHANS=false docker compose \
+  --env-file /opt/docker/.env -f /opt/docker/compose.yaml \
+  --profile all up -d --build --no-deps onionsimgeditor
+~~~
+
 ## Run locally without Docker
 
 Requires Node.js 20 or newer. No packages need to be installed.
