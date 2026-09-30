@@ -74,7 +74,10 @@ Object.assign(COPY.nl,{position_custom:"Vrij plaatsen",dragLabelHint:"Sleep het 
 Object.assign(COPY.en,{pageTitle:"Prepare your artwork",pageIntro:"Choose a size, place the image and check the result.",qualityCopy:"PNG avoids extra encoding loss. Resizing changes pixels and cannot create new detail.","guide_poster":"680 × 1000 px. Choose artwork that represents the entire series. Keep text and key details inside the frame.","guide_season-poster":"680 × 1000 px. Use imagery that fits the season. Place the season label where it stays clear of the title and main subject."});
 Object.assign(COPY.nl,{pageTitle:"Maak je artwork klaar",pageIntro:"Kies een formaat, plaats de afbeelding en controleer het resultaat.",qualityCopy:"PNG voegt geen coderingsverlies toe. Vergroten verandert pixels en creëert geen nieuwe details.","guide_poster":"680 × 1000 px. Kies artwork dat de hele serie weergeeft. Houd tekst en belangrijke details binnen het kader.","guide_season-poster":"680 × 1000 px. Gebruik passend beeld voor dit seizoen. Zet het seizoenslabel vrij van de titel en het hoofdonderwerp."});
 
-const state={preset:PRESETS[0],custom:false,file:null,image:null,url:null,hasTransparency:false,alphaBounds:null,shiftX:0,shiftY:0,zoom:1,dragging:false,pointerX:0,pointerY:0,stampX:.05,stampY:.05,stampDragging:false,stampPointerX:0,stampPointerY:0,language:"en"};
+Object.assign(COPY.en,{previewBackground:"Test background",backgroundChecker:"Checkerboard",backgroundWhite:"White",backgroundBlack:"Black",previewOnly:"Preview only; PNG stays transparent.",fitLogo:"Fit & center logo",safeArea:"Visible logo / safe area",safeAreaOk:"{width} × {height} px · within 780 × 290 px, including the outline",safeAreaBad:"The visible logo exceeds the safe area.",logoContrast:"Logo contrast",outlineLabel:"Optional outline",outlineNone:"None",outlineAuto:"Automatic · light or dark",outlineBlack:"Black",outlineWhite:"White",outlineDual:"White + black · both backgrounds",outlineWidth:"Outline width",outlineHelp:"Follows the visible edges, including inside letters. Included in the export. For both light and dark backgrounds, use the double outline and inspect the preview.",emptyArtwork:"This image has no visible artwork. Choose another image."});
+Object.assign(COPY.nl,{previewBackground:"Testachtergrond",backgroundChecker:"Schaakbord",backgroundWhite:"Wit",backgroundBlack:"Zwart",previewOnly:"Alleen voorbeeld; PNG blijft transparant.",fitLogo:"Pas en centreer logo",safeArea:"Zichtbaar logo / veilige ruimte",safeAreaOk:"{width} × {height} px · binnen 780 × 290 px, inclusief omlijning",safeAreaBad:"Het zichtbare logo valt buiten de veilige ruimte.",logoContrast:"Logocontrast",outlineLabel:"Optionele omlijning",outlineNone:"Geen",outlineAuto:"Automatisch · licht of donker",outlineBlack:"Zwart",outlineWhite:"Wit",outlineDual:"Wit + zwart · beide achtergronden",outlineWidth:"Dikte omlijning",outlineHelp:"Volgt de zichtbare randen, ook binnen letters. Wordt mee geëxporteerd. Gebruik voor lichte én donkere achtergronden de dubbele omlijning en controleer het voorbeeld.",emptyArtwork:"Deze afbeelding bevat geen zichtbaar artwork. Kies een andere afbeelding."});
+
+const state={preset:PRESETS[0],custom:false,file:null,image:null,url:null,hasTransparency:false,hasArtwork:false,alphaBounds:null,outlineColor:"black",renderKey:null,shiftX:0,shiftY:0,zoom:1,dragging:false,pointerX:0,pointerY:0,stampX:.05,stampY:.05,stampDragging:false,stampPointerX:0,stampPointerY:0,language:"en"};
 const $=(s)=>document.querySelector(s);
 const ui={
  input:$("#file-input"),drop:$("#drop-zone"),fileState:$("#file-state"),fileDetails:$("#file-details"),fileName:$("#file-name"),fileSize:$("#file-size"),remove:$("#remove-image"),language:$("#language-select"),theme:$("#theme-toggle"),
@@ -82,6 +85,7 @@ const ui={
  presetName:$("#selected-preset-name"),presetIcon:$("#selected-preset-icon"),dimensions:$("#selected-dimensions"),outputSize:$("#output-size"),
  stage:$("#stage"),board:$("#artboard"),image:$("#preview-image"),empty:$("#empty-state"),safe:$("#logo-safe-area"),stamp:$("#season-stamp"),dragHint:$("#drag-hint"),
  centerStatus:$("#center-status"),centerText:$("#center-status-text"),center:$("#center-image"),zoom:$("#zoom-slider"),zoomValue:$("#zoom-value"),
+ fit:$("#fit-logo"),previewBackground:$("#preview-background"),contrastPanel:$("#logo-contrast-panel"),outline:$("#logo-outline"),outlineWidth:$("#outline-width"),outlineWidthValue:$("#outline-width-value"),safeCheck:$("#safe-area-check"),safeCopy:$("#safe-area-copy"),
  resolution:$("#resolution-check"),resolutionText:$("#resolution-copy"),transparency:$("#transparency-check"),transparencyText:$("#transparency-copy"),alignment:$("#alignment-check"),alignmentText:$("#alignment-copy"),limit:$("#file-limit-check"),limitText:$("#file-limit-copy"),
  guide:$("#guideline-card"),guideTitle:$("#guideline-title"),guideCopy:$("#guideline-copy"),guideLink:$("#guideline-link"),clearlogoGuide:$("#clearlogo-guide"),
  seasonPanel:$("#season-panel"),seasonToggle:$("#season-toggle"),seasonNumber:$("#season-number"),stampPosition:$("#stamp-position"),stampColor:$("#stamp-color"),stampBackground:$("#stamp-background-color"),stampTransparent:$("#stamp-transparent"),stampStyle:$("#stamp-style"),autoStyle:$("#auto-season-style"),autoStatus:$("#season-auto-status"),upscaleOption:$("#upscale-option"),allowUpscale:$("#allow-upscale"),
@@ -125,23 +129,27 @@ function updatePresetInfo(){
  ui.guideCopy.textContent=state.custom?t("customGuideline"):p.id==="clearlogo"?t("clearlogoSummary"):t("guide_"+p.id);
  ui.guideLink.href="https://support.thetvdb.com/kb/faq.php?id="+(state.custom?"1":p.faq);ui.guideLink.textContent=state.custom?t("generalRules"):t("viewRules");ui.guide.classList.remove("warning","error");
 }
+function outlineRadius(){return state.hasTransparency&&ui.outline.value!=="none"?Number(ui.outlineWidth.value)*(ui.outline.value==="dual"?2:1):0}
 function geometry(){
  if(!state.image)return null;
  const p=state.preset,w=p.width,h=p.height,sw=state.image.naturalWidth,sh=state.image.naturalHeight;
  const bounds=p.id==="clearlogo"&&state.alphaBounds?state.alphaBounds:{left:0,top:0,right:sw,bottom:sh};
  const contentW=bounds.right-bounds.left,contentH=bounds.bottom-bounds.top;
- const idealScale=p.mode==="contain"?Math.min((w-2*(p.gutter||0))/contentW,(h-2*(p.gutter||0))/contentH):Math.max(w/sw,h/sh);
+ const radius=p.id==="clearlogo"?outlineRadius():0;
+ const idealScale=p.mode==="contain"?Math.min((w-2*((p.gutter||0)+radius))/contentW,(h-2*((p.gutter||0)+radius))/contentH):Math.max(w/sw,h/sh);
  let base=idealScale;if(p.mode==="contain"&&!ui.allowUpscale.checked)base=Math.min(1,base);
+ const maxZoom=p.mode==="contain"?Math.min(3,idealScale/base,ui.allowUpscale.checked?Infinity:1/base):Math.max(1,Math.min(3,1/base));
+ state.zoom=Math.max(p.mode==="contain"?.1:1,Math.min(state.zoom,maxZoom));
  const scale=base*state.zoom,dw=sw*scale,dh=sh*scale;
  const originX=p.id==="clearlogo"?(w-contentW*scale)/2-bounds.left*scale:(w-dw)/2;
  const originY=p.id==="clearlogo"?(h-contentH*scale)/2-bounds.top*scale:(h-dh)/2;
  let x=originX+state.shiftX,y=originY+state.shiftY;
  if(p.mode==="cover"){x=Math.min(0,Math.max(w-dw,x));y=Math.min(0,Math.max(h-dh,y))}
  else if(p.id==="clearlogo"){
-  const gutter=p.gutter||0,minX=gutter-bounds.left*scale,maxX=w-gutter-bounds.right*scale,minY=gutter-bounds.top*scale,maxY=h-gutter-bounds.bottom*scale;
+  const gutter=(p.gutter||0)+radius,minX=gutter-bounds.left*scale,maxX=w-gutter-bounds.right*scale,minY=gutter-bounds.top*scale,maxY=h-gutter-bounds.bottom*scale;
   x=Math.min(maxX,Math.max(minX,x));y=Math.min(maxY,Math.max(minY,y));
  }else{const gutter=p.gutter||0;x=Math.min(w-gutter-dw,Math.max(gutter,x));y=Math.min(h-gutter-dh,Math.max(gutter,y))}
- return {w,h,sw,sh,scale,dw,dh,x,y,base,idealScale,mode:p.mode,contentBounds:bounds,originX,originY};
+ return {w,h,sw,sh,scale,dw,dh,x,y,base,idealScale,maxZoom,mode:p.mode,contentBounds:bounds,originX,originY};
 }
 function constrainPosition(){const g=geometry();if(!g)return;state.shiftX=g.x-g.originX;state.shiftY=g.y-g.originY}
 function sizeBoard(){
@@ -192,11 +200,16 @@ function autoSeasonStyle(){
 }
 function checkClass(node,name,symbol){node.classList.remove("neutral","ok","warn","bad");node.classList.add(name);node.querySelector(".check-symbol").textContent=symbol}
 function updateChecks(){
+ ui.safeCheck.hidden=state.preset.id!=="clearlogo";
  if(!state.image){
+  checkClass(ui.safeCheck,"neutral","•");ui.safeCopy.textContent=t("addImageCheck");
   checkClass(ui.resolution,"neutral","•");ui.resolutionText.textContent=t("addImageCheck");checkClass(ui.transparency,"neutral","•");ui.transparencyText.textContent=t("transparencyOptional");checkClass(ui.alignment,"neutral","•");ui.alignmentText.textContent=t("centeredOnCanvas");
   checkClass(ui.limit,"neutral","•");ui.limitText.textContent=t("tvdbLimit");ui.centerStatus.classList.remove("off-center");ui.centerText.textContent=t("centered");ui.upscaleOption.hidden=true;ui.download.disabled=true;ui.message.textContent=t("addImageToExport");ui.message.className="export-message";return;
  }
- const g=geometry(),tooSmallCover=g.mode==="cover"&&g.scale>1.0001,tooSmallContain=g.mode==="contain"&&(g.sw<g.w||g.sh<g.h),tooSmall=tooSmallCover||tooSmallContain,transparencyMissing=state.preset.pngOnly&&!state.hasTransparency;
+ const g=geometry(),tooSmallCover=g.mode==="cover"&&g.scale>1.0001,tooSmallContain=g.mode==="contain"&&(g.sw<g.w||g.sh<g.h||g.idealScale>1.0001),tooSmall=tooSmallCover||tooSmallContain,transparencyMissing=state.preset.pngOnly&&!state.hasTransparency;
+ const b=g.contentBounds,r=outlineRadius(),left=g.x+b.left*g.scale-r,top=g.y+b.top*g.scale-r,right=g.x+b.right*g.scale+r,bottom=g.y+b.bottom*g.scale+r;
+ const safe=state.preset.id!=="clearlogo"||(left>=10-.001&&top>=10-.001&&right<=g.w-10+.001&&bottom<=g.h-10+.001);
+ checkClass(ui.safeCheck,safe?"ok":"bad",safe?"✓":"!");ui.safeCopy.textContent=safe?t("safeAreaOk",{width:Math.round(right-left),height:Math.round(bottom-top)}):t("safeAreaBad");
  const centered=Math.abs(g.x+(g.contentBounds.left+g.contentBounds.right)*g.scale/2-g.w/2)<.75&&Math.abs(g.y+(g.contentBounds.top+g.contentBounds.bottom)*g.scale/2-g.h/2)<.75;
  ui.upscaleOption.hidden=!tooSmall;
  checkClass(ui.resolution,tooSmall?(ui.allowUpscale.checked?"warn":"bad"):"ok",tooSmall?"!":"✓");ui.resolutionText.textContent=tooSmall?(ui.allowUpscale.checked?t("upscaleWarning"):(tooSmallCover?t("tooSmallCover"):t("tooSmallContain"))):t("sourceDimensions",{width:g.sw,height:g.sh});
@@ -204,17 +217,22 @@ function updateChecks(){
  checkClass(ui.alignment,centered?"ok":"warn",centered?"✓":"↗");ui.alignmentText.textContent=centered?t("exactlyCentered"):t("imageMoved");
  ui.centerStatus.classList.toggle("off-center",!centered);ui.centerText.textContent=centered?t("centered"):t("moved");
  const limit=state.file.size<=10*1024*1024;checkClass(ui.limit,limit?"ok":"warn",limit?"✓":"!");
- ui.limitText.textContent=limit?t("under10",{size:bytesLabel(state.file.size)}):t("checkExportSize",{size:bytesLabel(state.file.size)});ui.download.disabled=(tooSmall&&!ui.allowUpscale.checked)||transparencyMissing;
- if(transparencyMissing){ui.message.textContent=t("transparencyMissing");ui.message.className="export-message error";ui.guide.classList.add("error");ui.guideTitle.textContent=t("transparencyMissing")}
+ ui.limitText.textContent=limit?t("under10",{size:bytesLabel(state.file.size)}):t("checkExportSize",{size:bytesLabel(state.file.size)});ui.download.disabled=(tooSmall&&!ui.allowUpscale.checked)||transparencyMissing||!safe||!state.hasArtwork;
+ if(!state.hasArtwork||!safe){ui.message.textContent=t(!state.hasArtwork?"emptyArtwork":"safeAreaBad");ui.message.className="export-message error"}
+ else if(transparencyMissing){ui.message.textContent=t("transparencyMissing");ui.message.className="export-message error";ui.guide.classList.add("error");ui.guideTitle.textContent=t("transparencyMissing")}
  else if(tooSmall&&!ui.allowUpscale.checked){ui.message.textContent=t("upscaleRequired");ui.message.className="export-message warning";ui.guide.classList.add("warning");ui.guideTitle.textContent=t("upscaleRequired")}
  else{ui.message.textContent=tooSmall?t("upscaleWarning"):state.file.size>10*1024*1024?t("sourceFileBig"):t("readyToExport",{format:ui.format.value.toUpperCase()});ui.message.className=tooSmall||state.file.size>10*1024*1024?"export-message warning":"export-message";if(tooSmall)ui.guide.classList.add("warning")}
 }
 function paint(){
  updatePresetInfo();sizeBoard();ui.board.setAttribute("aria-label",t("boardAria"));
+ ui.contrastPanel.hidden=!state.image||!state.hasTransparency;ui.fit.hidden=state.preset.id!=="clearlogo";ui.fit.disabled=!state.image;ui.outlineWidth.disabled=ui.outline.value==="none";ui.outlineWidthValue.value=ui.outlineWidth.value+" px";ui.board.dataset.background=ui.previewBackground.value;
  if(!state.image){ui.image.hidden=true;ui.empty.hidden=false;ui.safe.hidden=state.preset.id!=="clearlogo";ui.stamp.hidden=true;ui.dragHint.hidden=true;ui.zoom.disabled=true;ui.zoom.max="1";ui.zoom.value="1";ui.zoomValue.value="100%";updateChecks();return}
  const g=geometry(),unit=ui.board.clientWidth/g.w;ui.image.hidden=false;ui.empty.hidden=true;ui.safe.hidden=state.preset.id!=="clearlogo";ui.dragHint.hidden=false;
- ui.image.style.width=(g.dw*unit)+"px";ui.image.style.height=(g.dh*unit)+"px";ui.image.style.left=(g.x*unit)+"px";ui.image.style.top=(g.y*unit)+"px";
- const maxZoom=Math.max(1,Math.min(3,1/g.base));ui.zoom.min="1";ui.zoom.max=String(maxZoom);ui.zoom.value=String(Math.min(state.zoom,maxZoom));ui.zoom.disabled=maxZoom<=1.005;ui.zoomValue.value=Math.round(state.zoom*100)+"%";
+ ui.image.style.width="100%";ui.image.style.height="100%";ui.image.style.left="0";ui.image.style.top="0";
+ const ratio=Math.min(1,1600/Math.max(g.w,g.h),unit*(window.devicePixelRatio||1)),pw=Math.max(1,Math.round(g.w*ratio)),ph=Math.max(1,Math.round(g.h*ratio));
+ const key=JSON.stringify([state.url,pw,ph,g.x,g.y,g.scale,ui.outline.value,ui.outlineWidth.value]);
+ if(state.renderKey!==key){ui.image.width=pw;ui.image.height=ph;drawArtwork(ui.image.getContext("2d"),g,pw/g.w,ph/g.h);state.renderKey=key}
+ ui.zoom.min=g.mode==="contain"?".1":"1";ui.zoom.max=String(g.maxZoom);ui.zoom.value=String(state.zoom);ui.zoom.disabled=g.mode!=="contain"&&g.maxZoom<=1.005;ui.zoomValue.value=Math.round(state.zoom*100)+"%";
  stampPreview();updateChecks();
 }
 function applyLanguage(){
@@ -230,28 +248,35 @@ function setTheme(theme,persist=true){
  if(persist)localStorage.setItem("onions-img-editor-theme",dark?"dark":"light");
 }
 function analyzeImage(image){
- const sw=image.naturalWidth,sh=image.naturalHeight,sampleScale=Math.min(1,1024/Math.max(sw,sh)),width=Math.max(1,Math.round(sw*sampleScale)),height=Math.max(1,Math.round(sh*sampleScale));
- const fullBounds={left:0,top:0,right:sw,bottom:sh},canvas=document.createElement("canvas");canvas.width=width;canvas.height=height;
- const ctx=canvas.getContext("2d",{willReadFrequently:true});if(!ctx)return {hasTransparency:false,bounds:fullBounds};
+ const sw=image.naturalWidth,sh=image.naturalHeight;
+ const fullBounds={left:0,top:0,right:sw,bottom:sh},canvas=document.createElement("canvas");
+ canvas.width=Math.min(1024,sw);canvas.height=Math.min(1024,sh);
+ const ctx=canvas.getContext("2d",{willReadFrequently:true});if(!ctx)return {hasTransparency:false,hasArtwork:true,bounds:fullBounds,outlineColor:"black"};
  try{
-  ctx.drawImage(image,0,0,width,height);const data=ctx.getImageData(0,0,width,height).data;let hasTransparency=false,minX=width,minY=height,maxX=-1,maxY=-1;
-  for(let y=0;y<height;y++)for(let x=0;x<width;x++){
-   const alpha=data[(y*width+x)*4+3];if(alpha<250)hasTransparency=true;
-   if(alpha>8){if(x<minX)minX=x;if(x>maxX)maxX=x;if(y<minY)minY=y;if(y>maxY)maxY=y}
+  let hasTransparency=false,minX=sw,minY=sh,maxX=-1,maxY=-1,luminance=0,weight=0;
+  // Inspect every source pixel in bounded tiles: no downsampling can hide an edge.
+  for(let ty=0;ty<sh;ty+=canvas.height)for(let tx=0;tx<sw;tx+=canvas.width){
+   const width=Math.min(canvas.width,sw-tx),height=Math.min(canvas.height,sh-ty);
+   ctx.clearRect(0,0,canvas.width,canvas.height);ctx.drawImage(image,tx,ty,width,height,0,0,width,height);
+   const data=ctx.getImageData(0,0,width,height).data;
+   for(let y=0;y<height;y++)for(let x=0;x<width;x++){
+    const i=(y*width+x)*4,alpha=data[i+3];if(alpha<255)hasTransparency=true;
+    if(alpha>0){minX=Math.min(minX,tx+x);maxX=Math.max(maxX,tx+x);minY=Math.min(minY,ty+y);maxY=Math.max(maxY,ty+y);luminance+=(.2126*data[i]+.7152*data[i+1]+.0722*data[i+2])*alpha;weight+=alpha}
+   }
   }
-  if(maxX<minX||maxY<minY)return {hasTransparency,bounds:fullBounds};
-  return {hasTransparency,bounds:{left:minX*sw/width,top:minY*sh/height,right:(maxX+1)*sw/width,bottom:(maxY+1)*sh/height}};
- }catch{return {hasTransparency:false,bounds:fullBounds}}
+  const hasArtwork=maxX>=minX&&maxY>=minY;
+  return {hasTransparency,hasArtwork,bounds:hasArtwork?{left:minX,top:minY,right:maxX+1,bottom:maxY+1}:fullBounds,outlineColor:weight&&luminance/weight<140?"white":"black"};
+ }catch{return {hasTransparency:false,hasArtwork:true,bounds:fullBounds,outlineColor:"black"}}
 }
 function loadImage(file){
  const allowed=["image/png","image/jpeg","image/webp","image/avif"];
  if(!file||!allowed.includes(file.type)){ui.message.textContent=t("chooseImageError");ui.message.className="export-message error";return}
  if(state.url)URL.revokeObjectURL(state.url);state.file=file;state.url=URL.createObjectURL(file);const image=new Image();
- image.onload=()=>{state.image=image;const analysis=analyzeImage(image);state.hasTransparency=analysis.hasTransparency;state.alphaBounds=analysis.bounds;state.shiftX=0;state.shiftY=0;state.zoom=1;ui.allowUpscale.checked=false;ui.image.src=state.url;ui.image.alt=file.name;ui.fileState.textContent=t("fileStateLoaded");ui.fileName.textContent=file.name;ui.fileSize.textContent=image.naturalWidth+" × "+image.naturalHeight+" px · "+bytesLabel(file.size);ui.fileDetails.hidden=false;ui.drop.hidden=true;paint();if(state.preset.id==="season-poster")autoSeasonStyle()};
+ image.onload=()=>{state.image=image;const analysis=analyzeImage(image);state.hasTransparency=analysis.hasTransparency;state.hasArtwork=analysis.hasArtwork;state.alphaBounds=analysis.bounds;state.outlineColor=analysis.outlineColor;state.shiftX=0;state.shiftY=0;state.zoom=1;ui.allowUpscale.checked=false;ui.image.setAttribute("aria-label",file.name);ui.fileState.textContent=t("fileStateLoaded");ui.fileName.textContent=file.name;ui.fileSize.textContent=image.naturalWidth+" × "+image.naturalHeight+" px · "+bytesLabel(file.size);ui.fileDetails.hidden=false;ui.drop.hidden=true;paint();if(state.preset.id==="season-poster")autoSeasonStyle()};
  image.onerror=()=>{ui.message.textContent=t("openImageError");ui.message.className="export-message error";URL.revokeObjectURL(state.url);state.url=null};image.src=state.url;
 }
 function removeImage(){
- if(state.url)URL.revokeObjectURL(state.url);state.url=null;state.image=null;state.file=null;state.hasTransparency=false;state.alphaBounds=null;ui.input.value="";ui.fileDetails.hidden=true;ui.drop.hidden=false;ui.fileState.textContent=t("fileStateEmpty");state.shiftX=0;state.shiftY=0;state.zoom=1;paint();
+ if(state.url)URL.revokeObjectURL(state.url);state.url=null;state.image=null;state.file=null;state.hasTransparency=false;state.hasArtwork=false;state.alphaBounds=null;state.renderKey=null;ui.input.value="";ui.fileDetails.hidden=true;ui.drop.hidden=false;ui.fileState.textContent=t("fileStateEmpty");state.shiftX=0;state.shiftY=0;state.zoom=1;paint();
 }
 function move(dx,dy){if(!state.image)return;state.shiftX+=dx*state.preset.width*.025;state.shiftY+=dy*state.preset.height*.025;constrainPosition();paint()}
 function startDrag(e){if(!state.image)return;state.dragging=true;state.pointerX=e.clientX;state.pointerY=e.clientY;ui.board.classList.add("dragging");ui.board.setPointerCapture(e.pointerId);e.preventDefault()}
@@ -276,10 +301,32 @@ function drawSeason(ctx,w,h){
  if(!ui.stampTransparent.checked){const radius=size*.28;ctx.fillStyle=hexRgba(ui.stampBackground.value,.92);ctx.beginPath();ctx.roundRect(x,y,bw,bh,radius);ctx.fill()}
  ctx.fillStyle=ui.stampColor.value;if(ui.stampTransparent.checked){ctx.shadowColor="rgba(0,0,0,.45)";ctx.shadowBlur=size*.2;ctx.shadowOffsetY=size*.05}ctx.fillText(text,x+px,y+bh/2);ctx.restore();
 }
+function drawArtwork(ctx,g,rx=1,ry=rx){
+ ctx.save();
+ // Keep fractional resampling/antialiasing pixels out of ClearLogo's gutter too.
+ if(state.preset.id==="clearlogo"){ctx.beginPath();ctx.rect(10*rx,10*ry,(g.w-20)*rx,(g.h-20)*ry);ctx.clip()}
+ const layer=document.createElement("canvas");layer.width=ctx.canvas.width;layer.height=ctx.canvas.height;
+ const source=layer.getContext("2d");source.imageSmoothingEnabled=true;source.imageSmoothingQuality="high";
+ source.drawImage(state.image,g.x*rx,g.y*ry,g.dw*rx,g.dh*ry);
+ if(outlineRadius()){
+  const mask=document.createElement("canvas");mask.width=layer.width;mask.height=layer.height;const edge=mask.getContext("2d");
+  const stroke=(radius,color)=>{
+   edge.clearRect(0,0,mask.width,mask.height);edge.globalCompositeOperation="source-over";
+   // Disk dilation follows alpha contours, including holes; it never draws a file rectangle.
+   for(let y=-radius;y<=radius;y++)for(let x=-radius;x<=radius;x++)if(x*x+y*y<=radius*radius)edge.drawImage(layer,x*rx,y*ry);
+   edge.globalCompositeOperation="source-in";edge.fillStyle=color;edge.fillRect(0,0,mask.width,mask.height);ctx.drawImage(mask,0,0);
+  };
+  const width=Number(ui.outlineWidth.value);
+  if(ui.outline.value==="dual"){stroke(width*2,"#111111");stroke(width,"#ffffff")}
+  else stroke(width,ui.outline.value==="auto"?(state.outlineColor==="white"?"#ffffff":"#111111"):ui.outline.value==="white"?"#ffffff":"#111111");
+ }
+ ctx.drawImage(layer,0,0);
+ ctx.restore();
+}
 function exportImage(){
  if(!state.image||ui.download.disabled)return;const g=geometry(),canvas=document.createElement("canvas");canvas.width=g.w;canvas.height=g.h;
  const type=ui.format.value==="jpeg"?"image/jpeg":"image/png",ctx=canvas.getContext("2d",{alpha:type==="image/png"});ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality="high";
- if(type==="image/jpeg"){ctx.fillStyle=ui.jpegBackground.value;ctx.fillRect(0,0,g.w,g.h)}ctx.drawImage(state.image,g.x,g.y,g.dw,g.dh);drawSeason(ctx,g.w,g.h);ui.message.textContent=t("preparing");ui.message.className="export-message";
+ if(type==="image/jpeg"){ctx.fillStyle=ui.jpegBackground.value;ctx.fillRect(0,0,g.w,g.h)}drawArtwork(ctx,g);drawSeason(ctx,g.w,g.h);ui.message.textContent=t("preparing");ui.message.className="export-message";
  canvas.toBlob((blob)=>{
   if(!blob){ui.message.textContent=t("exportFailed");ui.message.className="export-message error";return}
   const ext=type==="image/jpeg"?"jpg":"png",base=state.file.name.replace(/\.[^.]+$/,"").replace(/[^a-z0-9_-]+/gi,"-")||"onion-artwork";
@@ -291,6 +338,9 @@ function exportImage(){
 ui.input.addEventListener("change",(e)=>loadImage(e.target.files&&e.target.files[0]));ui.remove.addEventListener("click",removeImage);
 ui.more.addEventListener("click",()=>{ui.extra.hidden=!ui.extra.hidden;renderPresets()});ui.applyCustom.addEventListener("click",setCustom);
 ui.center.addEventListener("click",()=>{state.shiftX=0;state.shiftY=0;paint()});ui.autoStyle.addEventListener("click",autoSeasonStyle);
+ui.fit.addEventListener("click",()=>{state.shiftX=0;state.shiftY=0;state.zoom=1;paint()});
+ui.previewBackground.addEventListener("change",paint);
+ui.outline.addEventListener("change",()=>{constrainPosition();paint()});ui.outlineWidth.addEventListener("input",()=>{constrainPosition();paint()});
 ui.zoom.addEventListener("input",()=>{state.zoom=Number(ui.zoom.value);constrainPosition();paint()});
 ui.board.addEventListener("pointerdown",startDrag);ui.board.addEventListener("pointermove",drag);ui.board.addEventListener("pointerup",()=>{state.dragging=false;ui.board.classList.remove("dragging")});ui.board.addEventListener("pointercancel",()=>{state.dragging=false;ui.board.classList.remove("dragging")});
 ui.board.addEventListener("keydown",(e)=>{const d={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]};if(!d[e.key])return;e.preventDefault();move(d[e.key][0],d[e.key][1])});

@@ -7,8 +7,8 @@
   <meta name="description" content="Prepare TheTVDB artwork with precise crops, quality checks and presets. Your images stay on your device.">
   <title>Onion's Img Editor — TheTVDB artwork</title>
   <link rel="icon" href="./logo.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="./styles.css">
-  <script type="module" src="./app.js"></script>
+  <link rel="stylesheet" href="./styles.css?v=1.2.0">
+  <script type="module" src="./app.js?v=1.2.0"></script>
 </head>
 <body>
 <header class="topbar">
@@ -55,7 +55,7 @@
       <div class="stage-toolbar"><div class="stage-format"><span id="selected-preset-icon" class="format-icon">▯</span><div><strong id="selected-preset-name">Poster</strong><small id="selected-dimensions">680 × 1000 px</small></div></div><div class="stage-actions"><span id="center-status" class="center-status"><i></i><span id="center-status-text">Centered</span></span><button id="center-image" class="center-button" type="button"><b>⊙</b> <span data-i18n="centerImage">Center image</span></button></div></div>
       <div id="stage" class="stage">
         <div id="artboard" class="artboard" tabindex="0" role="application" aria-label="Drag the image or use the arrow keys to move the crop" data-i18n-aria="boardAria">
-          <img id="preview-image" alt="" draggable="false" hidden><div id="logo-safe-area" class="logo-safe-area" hidden></div>
+          <canvas id="preview-image" role="img" aria-label="Artwork preview" hidden></canvas><div id="logo-safe-area" class="logo-safe-area" hidden></div>
           <div class="center-guide guide-h"></div><div class="center-guide guide-v"></div><div class="center-reticle"></div>
           <div id="season-stamp" class="season-stamp" role="button" tabindex="0" aria-label="Drag the season label to position it" hidden>Season 1</div>
           <div id="empty-state" class="empty-state"><span>▧</span><strong data-i18n="canvasReady">Your canvas is ready</strong><small data-i18n="canvasHint">Add an image on the left<br>to adjust its crop.</small></div>
@@ -68,6 +68,12 @@
         <div class="nudge-controls"><button data-dx="0" data-dy="-1" type="button" aria-label="Up" data-i18n-aria="up">↑</button><button data-dx="-1" data-dy="0" type="button" aria-label="Left" data-i18n-aria="left">←</button><button data-dx="0" data-dy="1" type="button" aria-label="Down" data-i18n-aria="down">↓</button><button data-dx="1" data-dy="0" type="button" aria-label="Right" data-i18n-aria="right">→</button></div>
         <label class="zoom-control"><span data-i18n="zoom">ZOOM</span><input id="zoom-slider" type="range" min="1" max="1" step=".01" value="1" disabled><output id="zoom-value">100%</output></label>
       </div>
+    </div>
+    <div class="preview-controls">
+      <label for="preview-background" data-i18n="previewBackground">Test background</label>
+      <select id="preview-background" class="select-control"><option value="checker" data-i18n="backgroundChecker">Checkerboard</option><option value="white" data-i18n="backgroundWhite">White</option><option value="black" data-i18n="backgroundBlack">Black</option></select>
+      <button id="fit-logo" class="center-button" type="button" hidden data-i18n="fitLogo">Fit &amp; center logo</button>
+      <small data-i18n="previewOnly">Preview only; PNG stays transparent.</small>
     </div>
     <div id="guideline-card" class="guideline-card"><span class="guideline-icon">✓</span><div><strong id="guideline-title">Choose a preset to see its guidelines</strong><p id="guideline-copy">TheTVDB dimensions and artwork reminders appear here.</p></div><a id="guideline-link" href="https://support.thetvdb.com/kb/faq.php?cid=1" target="_blank" rel="noreferrer">View rules ↗</a></div>
     <section id="clearlogo-guide" class="clearlogo-guide" hidden aria-labelledby="clearlogo-guide-title">
@@ -93,7 +99,15 @@
       <div id="resolution-check" class="check-row neutral"><i class="check-symbol">•</i><span><strong data-i18n="sourceResolution">Source resolution</strong><small id="resolution-copy">Add an image</small></span></div>
       <div id="transparency-check" class="check-row neutral"><i class="check-symbol">•</i><span><strong data-i18n="transparency">Transparency</strong><small id="transparency-copy">Only required for ClearLogo and ClearArt</small></span></div>
       <div id="alignment-check" class="check-row neutral"><i class="check-symbol">•</i><span><strong data-i18n="alignment">Alignment</strong><small id="alignment-copy">Centered on the canvas</small></span></div>
+      <div id="safe-area-check" class="check-row neutral" hidden><i class="check-symbol">•</i><span><strong data-i18n="safeArea">Visible logo / safe area</strong><small id="safe-area-copy"></small></span></div>
       <div id="file-limit-check" class="check-row neutral"><i class="check-symbol">•</i><span><strong data-i18n="fileSize">File size</strong><small id="file-limit-copy">TheTVDB limit: 10 MB</small></span></div>
+    </section>
+    <section id="logo-contrast-panel" class="inspector-section" hidden>
+      <div class="inspector-title"><h2 data-i18n="logoContrast">Logo contrast</h2></div>
+      <label class="field-label" for="logo-outline" data-i18n="outlineLabel">Optional outline</label>
+      <select id="logo-outline" class="select-control" aria-describedby="outline-help"><option value="none" data-i18n="outlineNone">None</option><option value="auto" data-i18n="outlineAuto">Automatic · light or dark</option><option value="black" data-i18n="outlineBlack">Black</option><option value="white" data-i18n="outlineWhite">White</option><option value="dual" data-i18n="outlineDual">White + black · both backgrounds</option></select>
+      <label class="field-label" for="outline-width"><span data-i18n="outlineWidth">Outline width</span><output id="outline-width-value">2 px</output></label><input id="outline-width" type="range" min="1" max="4" step="1" value="2">
+      <p id="outline-help" class="field-help" data-i18n="outlineHelp">Follows the visible edges, including inside letters. Included in the export. For both light and dark backgrounds, use the double outline and inspect the preview.</p>
     </section>
     <section id="season-panel" class="inspector-section" hidden>
       <div class="inspector-title"><h2 data-i18n="seasonLabel">Season label</h2><label class="switch"><input id="season-toggle" type="checkbox" checked><span></span><em class="sr-only" data-i18n="addSeasonLabel">Add season label</em></label></div>
@@ -117,5 +131,5 @@
     <div class="privacy-note"><b>◈</b><p><strong data-i18n="privacyTitle">Private by design</strong><br><span data-i18n="privacyCopy">Images are processed in your browser and never uploaded.</span></p></div>
   </aside>
 </main>
-<footer class="page-footer"><b>ONION'S IMG EDITOR</b><span data-i18n="footerCopy">Made for TheTVDB artwork · TheTVDB decides what it accepts</span><span>v1.1</span></footer>
+<footer class="page-footer"><b>ONION'S IMG EDITOR</b><span data-i18n="footerCopy">Made for TheTVDB artwork · TheTVDB decides what it accepts</span><span>v1.2</span></footer>
 </body></html>

@@ -191,6 +191,13 @@ html[data-theme="dark"] .theme-moon { opacity: 1; }
 html[data-theme="dark"] .artboard { background-image: url("./checker-dark.svg"); box-shadow: 0 16px 48px rgba(0,0,0,.75); }
 .artboard.dragging { cursor: grabbing !important; }
 #preview-image { position: absolute; max-width: none; max-height: none; user-select: none; pointer-events: none; }
+html[data-theme] .artboard[data-background="white"] { background: #fff; }
+html[data-theme] .artboard[data-background="black"] { background: #000; }
+.preview-controls { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin: 12px 0; }
+.preview-controls label, .preview-controls small { color: var(--muted); font-size: .73rem; }
+.preview-controls .select-control { width: auto; }
+.preview-controls small { flex-basis: 100%; }
+#outline-width { width: 100%; accent-color: var(--accent); }
 .center-guide { position: absolute; z-index: 2; pointer-events: none; opacity: .55; filter: drop-shadow(0 1px 1px #0008); }
 .guide-h { top: 50%; right: 0; left: 0; border-top: 1px dashed #fff; }
 .guide-v { top: 0; bottom: 0; left: 50%; border-left: 1px dashed #fff; }
