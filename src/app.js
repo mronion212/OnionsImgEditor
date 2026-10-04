@@ -77,6 +77,9 @@ Object.assign(COPY.nl,{pageTitle:"Maak je artwork klaar",pageIntro:"Kies een for
 Object.assign(COPY.en,{previewBackground:"Test background",backgroundChecker:"Checkerboard",backgroundWhite:"White",backgroundBlack:"Black",previewOnly:"Preview only; PNG stays transparent.",fitLogo:"Fit & center logo",safeArea:"Visible logo / safe area",safeAreaOk:"{width} × {height} px · within 780 × 290 px, including the outline",safeAreaBad:"The visible logo exceeds the safe area.",logoContrast:"Logo contrast",outlineLabel:"Optional outline",outlineNone:"None",outlineAuto:"Automatic · light or dark",outlineBlack:"Black",outlineWhite:"White",outlineDual:"White + black · both backgrounds",outlineWidth:"Outline width",outlineHelp:"Follows the visible edges, including inside letters. Included in the export. For both light and dark backgrounds, use the double outline and inspect the preview.",emptyArtwork:"This image has no visible artwork. Choose another image."});
 Object.assign(COPY.nl,{previewBackground:"Testachtergrond",backgroundChecker:"Schaakbord",backgroundWhite:"Wit",backgroundBlack:"Zwart",previewOnly:"Alleen voorbeeld; PNG blijft transparant.",fitLogo:"Pas en centreer logo",safeArea:"Zichtbaar logo / veilige ruimte",safeAreaOk:"{width} × {height} px · binnen 780 × 290 px, inclusief omlijning",safeAreaBad:"Het zichtbare logo valt buiten de veilige ruimte.",logoContrast:"Logocontrast",outlineLabel:"Optionele omlijning",outlineNone:"Geen",outlineAuto:"Automatisch · licht of donker",outlineBlack:"Zwart",outlineWhite:"Wit",outlineDual:"Wit + zwart · beide achtergronden",outlineWidth:"Dikte omlijning",outlineHelp:"Volgt de zichtbare randen, ook binnen letters. Wordt mee geëxporteerd. Gebruik voor lichte én donkere achtergronden de dubbele omlijning en controleer het voorbeeld.",emptyArtwork:"Deze afbeelding bevat geen zichtbaar artwork. Kies een andere afbeelding."});
 
+Object.assign(COPY.en,{pageTitle:"Artwork editor",pageIntro:"Your workspace for TheTVDB artwork.",toolsTitle:"ARTWORK SETTINGS",localBadge:"Everything stays on your device",canvasReady:"Start with an image",canvasHint:"Drop a file onto this workspace<br>or choose one from your device.",browseImage:"Choose an image",stageCaption:"Drag to reposition · arrow keys to fine-tune"});
+Object.assign(COPY.nl,{pageTitle:"Artwork editor",pageIntro:"Je werkruimte voor TheTVDB-artwork.",toolsTitle:"INSTELLINGEN",localBadge:"Alles blijft op je apparaat",canvasReady:"Begin met een afbeelding",canvasHint:"Sleep een bestand naar deze werkruimte<br>of kies er één op je apparaat.",browseImage:"Kies een afbeelding",stageCaption:"Sleep om te verplaatsen · pijltjestoetsen voor precisie"});
+
 const state={preset:PRESETS[0],custom:false,file:null,image:null,url:null,hasTransparency:false,hasArtwork:false,alphaBounds:null,outlineColor:"black",renderKey:null,shiftX:0,shiftY:0,zoom:1,dragging:false,pointerX:0,pointerY:0,stampX:.05,stampY:.05,stampDragging:false,stampPointerX:0,stampPointerY:0,language:"en"};
 const $=(s)=>document.querySelector(s);
 const ui={
@@ -160,6 +163,7 @@ function sizeBoard(){
  const maxW=Math.max(1,ui.stage.clientWidth-parseFloat(style.paddingLeft)-parseFloat(style.paddingRight));
  const maxH=Math.max(1,ui.stage.clientHeight-parseFloat(style.paddingTop)-parseFloat(style.paddingBottom)-captionHeight);
  let w=Math.min(maxW,maxH*ratio),h=w/ratio;if(h>maxH){h=maxH;w=h*ratio}ui.board.style.width=Math.round(w)+"px";ui.board.style.height=Math.round(h)+"px";
+ ui.board.classList.toggle("compact-empty",h<260||w<220);ui.board.classList.toggle("tiny-empty",h<100||w<140);
 }
 function hexRgba(hex,alpha){
  const parts=String(hex).replace("#","").match(/^([\da-f]{2})([\da-f]{2})([\da-f]{2})$/i);
@@ -244,7 +248,7 @@ function applyLanguage(){
 }
 function setTheme(theme,persist=true){
  const dark=theme==="dark";document.documentElement.dataset.theme=dark?"dark":"light";ui.theme.setAttribute("aria-pressed",String(dark));ui.theme.setAttribute("aria-label",t(dark?"themeLightLabel":"themeDarkLabel"));
- const themeColor=$("meta[name='theme-color']");if(themeColor)themeColor.content=dark?"#000000":"#ffffff";
+ const themeColor=$("meta[name='theme-color']");if(themeColor)themeColor.content=dark?"#171819":"#f0efed";
  if(persist)localStorage.setItem("onions-img-editor-theme",dark?"dark":"light");
 }
 function analyzeImage(image){
@@ -336,6 +340,7 @@ function exportImage(){
 }
 
 ui.input.addEventListener("change",(e)=>loadImage(e.target.files&&e.target.files[0]));ui.remove.addEventListener("click",removeImage);
+$("#canvas-upload").addEventListener("click",()=>ui.input.click());
 ui.more.addEventListener("click",()=>{ui.extra.hidden=!ui.extra.hidden;renderPresets()});ui.applyCustom.addEventListener("click",setCustom);
 ui.center.addEventListener("click",()=>{state.shiftX=0;state.shiftY=0;paint()});ui.autoStyle.addEventListener("click",autoSeasonStyle);
 ui.fit.addEventListener("click",()=>{state.shiftX=0;state.shiftY=0;state.zoom=1;paint()});

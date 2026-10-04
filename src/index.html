@@ -3,15 +3,16 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="theme-color" content="#000000">
+  <meta name="theme-color" content="#171819">
   <meta name="description" content="Prepare TheTVDB artwork with precise crops, quality checks and presets. Your images stay on your device.">
   <title>Onion's Img Editor — TheTVDB artwork</title>
   <link rel="icon" href="./logo.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="./styles.css?v=1.2.0">
-  <script type="module" src="./app.js?v=1.2.0"></script>
+  <link rel="stylesheet" href="./styles.css?v=1.4.0">
+  <script type="module" src="./app.js?v=1.4.0"></script>
 </head>
 <body>
 <header class="topbar">
+  <div class="topbar-inner">
   <a class="brand" href="./" aria-label="Onion's Img Editor">
     <img class="brand-mark" src="./logo.svg" alt="">
     <span class="brand-copy"><strong>Onion's</strong><small>IMG EDITOR</small></span>
@@ -22,35 +23,13 @@
     <a data-i18n="tvdbRules" href="https://support.thetvdb.com/kb/faq.php?cid=1" target="_blank" rel="noreferrer">TheTVDB guidelines ↗</a>
     <label class="language-selector"><span data-i18n="languageLabel">Language</span><select id="language-select" aria-label="Language"><option value="en">English</option><option value="nl">Nederlands</option></select></label>
   </div>
+  </div>
 </header>
 <main class="app-shell">
-  <aside class="left-panel">
-    <section class="panel-section">
-      <div class="section-heading"><span class="eyebrow" data-i18n="stepImage">01 / IMAGE</span><span id="file-state" class="tiny-status">No file yet</span></div>
-      <label class="upload-zone" id="drop-zone" for="file-input">
-        <input id="file-input" type="file" accept="image/png,image/jpeg,image/webp,image/avif">
-        <span class="upload-icon">↥</span><strong data-i18n="addImage">Add an image</strong><span data-i18n="dropOrBrowse">Drop it here or browse</span><small>PNG, JPG, WebP or AVIF</small>
-      </label>
-      <div id="file-details" class="file-details" hidden><span class="file-type-icon">IMG</span><span class="file-copy"><strong id="file-name"></strong><small id="file-size"></small></span><button id="remove-image" class="icon-button" type="button" aria-label="Remove image" data-i18n-aria="removeImage">×</button></div>
-    </section>
-    <section class="panel-section">
-      <div class="section-heading"><span class="eyebrow" data-i18n="stepPreset">02 / TVDB PRESET</span></div>
-      <div id="preset-grid" class="preset-grid" aria-label="Choose an image type"></div>
-      <button id="more-presets" class="text-button" type="button">+ More TheTVDB formats</button>
-      <div id="extra-presets" class="extra-presets" hidden></div>
-      <details class="custom-size">
-        <summary class="custom-heading"><span data-i18n="customSize">Custom size</span><span class="custom-tag" data-i18n="customRatio">custom ratio</span></summary>
-        <div class="custom-body">
-          <div class="custom-dimensions"><label><span data-i18n="width">Width</span><input id="custom-width" type="number" min="1" max="12000" value="1200"></label><span>×</span><label><span data-i18n="height">Height</span><input id="custom-height" type="number" min="1" max="12000" value="675"></label></div>
-          <button id="apply-custom" class="custom-apply" type="button" data-i18n="applySize">Apply size</button>
-        </div>
-      </details>
-    </section>
-    <details class="panel-tip"><summary><b aria-hidden="true">i</b><strong data-i18n="qualityTitle">Keep the original quality</strong></summary><p data-i18n="qualityCopy">PNG encoding is lossless. JPEG is lossy. Cropping or resizing changes pixels, and small sources are never silently enlarged.</p></details>
-  </aside>
+  <div class="workspace-heading"><div><div class="eyebrow">THETVDB / ARTWORK</div><h1 data-i18n="pageTitle">Your artwork. Perfectly framed.</h1><p data-i18n="pageIntro">Choose a format, refine your crop and export with confidence.</p></div><span class="local-badge"><i aria-hidden="true"></i><span data-i18n="localBadge">Your own private studio</span></span></div>
+
 
   <section class="workspace">
-    <div class="workspace-heading"><div><div class="eyebrow">ONION'S STUDIO <span>/</span> TVDB</div><h1 data-i18n="pageTitle">Artwork, precisely framed</h1><p data-i18n="pageIntro">Choose a preset, position the crop and export.</p></div><span class="local-badge" data-i18n="localBadge">⌘ &nbsp;Processed locally</span></div>
     <div class="stage-card">
       <div class="stage-toolbar"><div class="stage-format"><span id="selected-preset-icon" class="format-icon">▯</span><div><strong id="selected-preset-name">Poster</strong><small id="selected-dimensions">680 × 1000 px</small></div></div><div class="stage-actions"><span id="center-status" class="center-status"><i></i><span id="center-status-text">Centered</span></span><button id="center-image" class="center-button" type="button"><b>⊙</b> <span data-i18n="centerImage">Center image</span></button></div></div>
       <div id="stage" class="stage">
@@ -58,7 +37,7 @@
           <canvas id="preview-image" role="img" aria-label="Artwork preview" hidden></canvas><div id="logo-safe-area" class="logo-safe-area" hidden></div>
           <div class="center-guide guide-h"></div><div class="center-guide guide-v"></div><div class="center-reticle"></div>
           <div id="season-stamp" class="season-stamp" role="button" tabindex="0" aria-label="Drag the season label to position it" hidden>Season 1</div>
-          <div id="empty-state" class="empty-state"><span>▧</span><strong data-i18n="canvasReady">Your canvas is ready</strong><small data-i18n="canvasHint">Add an image on the left<br>to adjust its crop.</small></div>
+          <div id="empty-state" class="empty-state"><svg class="empty-illustration" viewBox="0 0 80 80" fill="none" aria-hidden="true"><rect x="15" y="12" width="48" height="56" rx="6" transform="rotate(-10 39 40)" fill="currentColor" opacity=".07" stroke="currentColor" stroke-opacity=".25"/><rect x="18" y="14" width="46" height="54" rx="6" fill="var(--surface)" stroke="currentColor" stroke-opacity=".55" stroke-width="1.5"/><rect x="25" y="21" width="32" height="35" rx="3" fill="currentColor" opacity=".1"/><circle cx="48" cy="29" r="4" fill="currentColor" opacity=".65"/><path d="m26 50 11-14 8 9 5-5 6 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M26 62h16" stroke="currentColor" stroke-opacity=".4" stroke-width="1.5" stroke-linecap="round"/><path d="M67 9v10m-5-5h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><strong data-i18n="canvasReady">Your next great image starts here.</strong><small data-i18n="canvasHint">Drop your image onto the canvas.<br>Make the frame your own.</small><button id="canvas-upload" class="canvas-upload" type="button" data-i18n="browseImage">Choose an image</button></div>
           <span id="drag-hint" class="drag-hint" hidden data-i18n="dragToMove">Drag to reposition</span>
         </div>
         <div class="stage-caption" data-i18n="stageCaption">Drag to reposition · use Center image for exact alignment</div>
@@ -91,16 +70,30 @@
     </section>
   </section>
 
-  <aside class="right-panel">
-    <div class="inspector-header"><span class="eyebrow" data-i18n="stepOutput">03 / OUTPUT</span><b>⌗</b></div>
-    <div class="output-size-card"><span data-i18n="canvasSize">CANVAS SIZE</span><strong id="output-size">680 <i>×</i> 1000</strong><small data-i18n="exactPixels">pixels · exact</small></div>
-    <section class="inspector-section">
-      <div class="inspector-title"><h2 data-i18n="checksTitle">Checks</h2><span class="live-tag"><i></i>LIVE</span></div>
-      <div id="resolution-check" class="check-row neutral"><i class="check-symbol">•</i><span><strong data-i18n="sourceResolution">Source resolution</strong><small id="resolution-copy">Add an image</small></span></div>
-      <div id="transparency-check" class="check-row neutral"><i class="check-symbol">•</i><span><strong data-i18n="transparency">Transparency</strong><small id="transparency-copy">Only required for ClearLogo and ClearArt</small></span></div>
-      <div id="alignment-check" class="check-row neutral"><i class="check-symbol">•</i><span><strong data-i18n="alignment">Alignment</strong><small id="alignment-copy">Centered on the canvas</small></span></div>
-      <div id="safe-area-check" class="check-row neutral" hidden><i class="check-symbol">•</i><span><strong data-i18n="safeArea">Visible logo / safe area</strong><small id="safe-area-copy"></small></span></div>
-      <div id="file-limit-check" class="check-row neutral"><i class="check-symbol">•</i><span><strong data-i18n="fileSize">File size</strong><small id="file-limit-copy">TheTVDB limit: 10 MB</small></span></div>
+  <aside class="control-panel" aria-label="Artwork controls">
+    <div class="control-header"><span class="eyebrow" data-i18n="toolsTitle">ARTWORK SETTINGS</span><span class="control-header-icon" aria-hidden="true">☷</span></div>
+    <div class="control-scroll">
+  <div class="left-panel">
+    <section class="panel-section">
+      <div class="section-heading"><span class="eyebrow" data-i18n="stepImage">01 / IMAGE</span><span id="file-state" class="tiny-status">No file yet</span></div>
+      <label class="upload-zone" id="drop-zone" for="file-input">
+        <input id="file-input" type="file" accept="image/png,image/jpeg,image/webp,image/avif">
+        <span class="upload-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4m-4 4 4-4 4 4M4 16v4h16v-4"/></svg></span><strong data-i18n="addImage">Add an image</strong><span data-i18n="dropOrBrowse">Drop it here or browse</span><small>PNG, JPG, WebP or AVIF</small>
+      </label>
+      <div id="file-details" class="file-details" hidden><span class="file-type-icon">IMG</span><span class="file-copy"><strong id="file-name"></strong><small id="file-size"></small></span><button id="remove-image" class="icon-button" type="button" aria-label="Remove image" data-i18n-aria="removeImage">×</button></div>
+    </section>
+    <section class="panel-section">
+      <div class="section-heading"><span class="eyebrow" data-i18n="stepPreset">02 / TVDB PRESET</span></div>
+      <div id="preset-grid" class="preset-grid" aria-label="Choose an image type"></div>
+      <button id="more-presets" class="text-button" type="button">+ More TheTVDB formats</button>
+      <div id="extra-presets" class="extra-presets" hidden></div>
+      <details class="custom-size">
+        <summary class="custom-heading"><span data-i18n="customSize">Custom size</span><span class="custom-tag" data-i18n="customRatio">custom ratio</span></summary>
+        <div class="custom-body">
+          <div class="custom-dimensions"><label><span data-i18n="width">Width</span><input id="custom-width" type="number" min="1" max="12000" value="1200"></label><span>×</span><label><span data-i18n="height">Height</span><input id="custom-height" type="number" min="1" max="12000" value="675"></label></div>
+          <button id="apply-custom" class="custom-apply" type="button" data-i18n="applySize">Apply size</button>
+        </div>
+      </details>
     </section>
     <section id="logo-contrast-panel" class="inspector-section" hidden>
       <div class="inspector-title"><h2 data-i18n="logoContrast">Logo contrast</h2></div>
@@ -120,16 +113,33 @@
       <label class="check-option"><input id="stamp-transparent" type="checkbox"><span data-i18n="transparentBadge">Transparent badge background</span></label>
       <label class="style-field stamp-style-field"><span data-i18n="typeStyle">Type style</span><select id="stamp-style" class="select-control"><option value="sans" data-i18n="styleModern">Modern</option><option value="serif" data-i18n="styleClassic">Classic</option><option value="condensed" data-i18n="styleCondensed">Condensed</option></select></label>
     </section>
-    <section class="inspector-section">
-      <div class="inspector-title"><h2 data-i18n="exportTitle">Export</h2></div>
-      <label class="field-label" for="format-select" data-i18n="fileFormat">File format</label><select id="format-select" class="select-control" aria-describedby="format-note"><option value="png" data-i18n="pngOption">PNG · lossless</option><option value="jpeg" data-i18n="jpegOption">JPEG · smaller file</option></select>
+    <details class="panel-tip"><summary><b aria-hidden="true">i</b><strong data-i18n="qualityTitle">Keep the original quality</strong></summary><p data-i18n="qualityCopy">PNG encoding is lossless. JPEG is lossy. Cropping or resizing changes pixels, and small sources are never silently enlarged.</p></details>
+  </div>
+    <section class="inspector-section export-settings">
       <p id="format-note" class="format-note">PNG preserves detail and transparency without extra compression loss.</p>
       <div id="jpeg-options" hidden><label class="field-label" for="jpeg-quality"><span data-i18n="jpegQuality">JPEG quality</span><output id="jpeg-quality-value">96%</output></label><input id="jpeg-quality" type="range" min=".8" max="1" step=".01" value=".96"><label class="field-label" for="jpeg-background" data-i18n="transparentBackground">Background for transparency</label><input id="jpeg-background" class="color-input" type="color" value="#ffffff"></div>
       <div id="upscale-option" class="upscale-option" hidden><label class="check-option"><input id="allow-upscale" type="checkbox"><span data-i18n="allowUpscale">Allow resizing this image upward</span></label><p id="upscale-note" data-i18n="upscaleNote">This runs locally in your browser. Resizing adds pixels but cannot restore lost detail; inspect the result before uploading.</p></div>
-      <button id="download-button" class="download-button" disabled>↓ &nbsp;Download PNG</button><p id="export-message" class="export-message" aria-live="polite">Add an image to export.</p>
     </section>
-    <div class="privacy-note"><b>◈</b><p><strong data-i18n="privacyTitle">Private by design</strong><br><span data-i18n="privacyCopy">Images are processed in your browser and never uploaded.</span></p></div>
+  <details class="right-panel"><summary class="checks-summary"><span data-i18n="checksTitle">Checks</span><span aria-hidden="true">⌄</span></summary>
+    <div class="inspector-header"><span class="eyebrow" data-i18n="stepOutput">03 / OUTPUT</span><b>⌗</b></div>
+    <div class="output-size-card"><span data-i18n="canvasSize">CANVAS SIZE</span><strong id="output-size">680 <i>×</i> 1000</strong><small data-i18n="exactPixels">pixels · exact</small></div>
+    <section class="inspector-section">
+      <div class="inspector-title"><h2 data-i18n="checksTitle">Checks</h2><span class="live-tag"><i></i>LIVE</span></div>
+      <div id="resolution-check" class="check-row neutral"><i class="check-symbol">•</i><span><strong data-i18n="sourceResolution">Source resolution</strong><small id="resolution-copy">Add an image</small></span></div>
+      <div id="transparency-check" class="check-row neutral"><i class="check-symbol">•</i><span><strong data-i18n="transparency">Transparency</strong><small id="transparency-copy">Only required for ClearLogo and ClearArt</small></span></div>
+      <div id="alignment-check" class="check-row neutral"><i class="check-symbol">•</i><span><strong data-i18n="alignment">Alignment</strong><small id="alignment-copy">Centered on the canvas</small></span></div>
+      <div id="safe-area-check" class="check-row neutral" hidden><i class="check-symbol">•</i><span><strong data-i18n="safeArea">Visible logo / safe area</strong><small id="safe-area-copy"></small></span></div>
+      <div id="file-limit-check" class="check-row neutral"><i class="check-symbol">•</i><span><strong data-i18n="fileSize">File size</strong><small id="file-limit-copy">TheTVDB limit: 10 MB</small></span></div>
+    </section>
+
+    <div class="privacy-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3m-4 5v2"/></svg><p><strong data-i18n="privacyTitle">Private by design</strong><br><span data-i18n="privacyCopy">Images are processed in your browser and never uploaded.</span></p></div>
+  </details>
+    </div>
+    <div class="export-dock">
+      <label class="sr-only" for="format-select" data-i18n="fileFormat">File format</label><select id="format-select" class="select-control" aria-describedby="format-note"><option value="png" data-i18n="pngOption">PNG · lossless</option><option value="jpeg" data-i18n="jpegOption">JPEG · smaller file</option></select>
+      <button id="download-button" class="download-button" disabled>↓ &nbsp;Download PNG</button><p id="export-message" class="export-message" aria-live="polite">Add an image to export.</p>
+    </div>
   </aside>
 </main>
-<footer class="page-footer"><b>ONION'S IMG EDITOR</b><span data-i18n="footerCopy">Made for TheTVDB artwork · TheTVDB decides what it accepts</span><span>v1.2</span></footer>
+<footer class="page-footer"><b>ONION'S IMG EDITOR</b><span data-i18n="footerCopy">Made for TheTVDB artwork · TheTVDB decides what it accepts</span><span>v1.4</span></footer>
 </body></html>

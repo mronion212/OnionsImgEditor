@@ -71,6 +71,8 @@ The season-label placement is a visual heuristic that samples quieter corners an
 
 With the local server running, run `npm run test:browser` with Playwright available (installed locally or supplied through `NODE_PATH`) and Microsoft Edge installed. The checks exercise exact alpha bounds, asymmetric padding, thin isolated pixels, proportional fitting, zoom/drag constraints, outline colors and widths, exported PNG transparency and safe margins, source-size checks, Dutch controls, and mobile layout.
 
+Run `npm run test:layout` for 64 responsive layouts from 320 to 5120 pixels wide, in English and Dutch and both themes. It checks matching top/bottom edges of the canvas and inspector, aligned format/export controls, canvas uploading and all presets with a loaded image. Set `EDITOR_SCREENSHOTS` to an output directory to save visual previews. The editor has one large canvas and a unified inspector with a persistent export action. Below 960 pixels, controls move beneath the canvas without nested scrolling. Its width is capped at 2200 pixels to keep controls within reach on ultrawide displays.
+
 ## TheTVDB references
 
 Preset sizes and guidance are based on TheTVDB Support Center:
