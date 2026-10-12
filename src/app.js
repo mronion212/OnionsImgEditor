@@ -83,7 +83,7 @@ Object.assign(COPY.nl,{pageTitle:"Artwork editor",pageIntro:"Je werkruimte voor 
 Object.assign(COPY.en,{exportResolution:"Export resolution",resolutionAuto:"Automatic · highest source resolution",resolutionBase:"1× · base size",resolutionHelp:"{width} × {height} px · {multiple}× base size. Automatic uses the largest whole multiple supported by this crop, without enlarging the source (up to 12,000 px per side / 40 MP).",outputMultiple:"pixels · {multiple}× base size",baseDimensions:"{width} × {height} px · base",qualityCopy:"ClearLogo and Episode HD keep the largest whole multiple of the base size supported by the source and crop. PNG avoids extra encoding loss. Enlarging cannot create new detail.","guide_episode-hd":"640 × 360 px is the HD base size (16:9). Export keeps a whole multiple supported by the source and crop. Use a unique episode image; avoid spoilers, title cards, subtitles and watermarks."});
 Object.assign(COPY.nl,{exportResolution:"Exportresolutie",resolutionAuto:"Automatisch · hoogste bronresolutie",resolutionBase:"1× · basisformaat",resolutionHelp:"{width} × {height} px · {multiple}× basisformaat. Automatisch kiest het grootste hele veelvoud dat deze uitsnede toelaat, zonder de bron te vergroten (maximaal 12.000 px per zijde / 40 MP).",outputMultiple:"pixels · {multiple}× basisformaat",baseDimensions:"{width} × {height} px · basis",qualityCopy:"ClearLogo en Aflevering HD behouden het grootste hele veelvoud van het basisformaat dat de bron en uitsnede toelaten. PNG voegt geen coderingsverlies toe. Vergroten creëert geen nieuwe details.","guide_episode-hd":"640 × 360 px is het HD-basisformaat (16:9). De export behoudt een heel veelvoud dat de bron en uitsnede toelaten. Gebruik een uniek afleveringsbeeld; vermijd spoilers, titelkaarten, ondertiteling en watermerken."});
 
-const state={preset:PRESETS[0],custom:false,file:null,image:null,url:null,hasTransparency:false,hasArtwork:false,alphaBounds:null,outlineColor:"black",renderKey:null,shiftX:0,shiftY:0,zoom:1,dragging:false,pointerX:0,pointerY:0,stampX:.05,stampY:.05,stampDragging:false,stampPointerX:0,stampPointerY:0,language:"en"};
+const state={preset:PRESETS[0],custom:false,file:null,image:null,url:null,hasTransparency:false,hasArtwork:false,alphaBounds:null,framingBounds:null,outlineColor:"black",renderKey:null,shiftX:0,shiftY:0,zoom:1,dragging:false,pointerX:0,pointerY:0,stampX:.05,stampY:.05,stampDragging:false,stampPointerX:0,stampPointerY:0,language:"en"};
 const $=(s)=>document.querySelector(s);
 const ui={
  input:$("#file-input"),drop:$("#drop-zone"),fileState:$("#file-state"),fileDetails:$("#file-details"),fileName:$("#file-name"),fileSize:$("#file-size"),remove:$("#remove-image"),language:$("#language-select"),theme:$("#theme-toggle"),
@@ -141,7 +141,7 @@ function outlineRadius(){return state.hasTransparency&&ui.outline.value!=="none"
 function geometry(){
  if(!state.image)return null;
  const p=state.preset,w=p.width,h=p.height,sw=state.image.naturalWidth,sh=state.image.naturalHeight;
- const bounds=p.id==="clearlogo"&&state.alphaBounds?state.alphaBounds:{left:0,top:0,right:sw,bottom:sh};
+ const bounds=p.id==="clearlogo"?(state.framingBounds||state.alphaBounds||{left:0,top:0,right:sw,bottom:sh}):{left:0,top:0,right:sw,bottom:sh};
  const contentW=bounds.right-bounds.left,contentH=bounds.bottom-bounds.top;
  const radius=p.id==="clearlogo"?outlineRadius():0;
  const idealScale=p.mode==="contain"?Math.min((w-2*((p.gutter||0)+radius))/contentW,(h-2*((p.gutter||0)+radius))/contentH):Math.max(w/sw,h/sh);
@@ -272,9 +272,10 @@ function analyzeImage(image){
  const sw=image.naturalWidth,sh=image.naturalHeight;
  const fullBounds={left:0,top:0,right:sw,bottom:sh},canvas=document.createElement("canvas");
  canvas.width=Math.min(1024,sw);canvas.height=Math.min(1024,sh);
- const ctx=canvas.getContext("2d",{willReadFrequently:true});if(!ctx)return {hasTransparency:false,hasArtwork:true,bounds:fullBounds,outlineColor:"black"};
+ const ctx=canvas.getContext("2d",{willReadFrequently:true});if(!ctx)return {hasTransparency:false,hasArtwork:true,bounds:fullBounds,framingBounds:fullBounds,outlineColor:"black"};
  try{
-  let hasTransparency=false,minX=sw,minY=sh,maxX=-1,maxY=-1,luminance=0,weight=0;
+  let hasTransparency=false,minX=sw,minY=sh,maxX=-1,maxY=-1,luminance=0,weight=0,peakAlpha=0;
+  const edges=Array.from({length:256},()=>({left:sw,top:sh,right:0,bottom:0}));
   // Inspect every source pixel in bounded tiles: no downsampling can hide an edge.
   for(let ty=0;ty<sh;ty+=canvas.height)for(let tx=0;tx<sw;tx+=canvas.width){
    const width=Math.min(canvas.width,sw-tx),height=Math.min(canvas.height,sh-ty);
@@ -282,22 +283,35 @@ function analyzeImage(image){
    const data=ctx.getImageData(0,0,width,height).data;
    for(let y=0;y<height;y++)for(let x=0;x<width;x++){
     const i=(y*width+x)*4,alpha=data[i+3];if(alpha<255)hasTransparency=true;
-    if(alpha>0){minX=Math.min(minX,tx+x);maxX=Math.max(maxX,tx+x);minY=Math.min(minY,ty+y);maxY=Math.max(maxY,ty+y);luminance+=(.2126*data[i]+.7152*data[i+1]+.0722*data[i+2])*alpha;weight+=alpha}
+    if(alpha>0){
+     const px=tx+x,py=ty+y,edge=edges[alpha];
+     minX=Math.min(minX,px);maxX=Math.max(maxX,px);minY=Math.min(minY,py);maxY=Math.max(maxY,py);
+     edge.left=Math.min(edge.left,px);edge.right=Math.max(edge.right,px+1);edge.top=Math.min(edge.top,py);edge.bottom=Math.max(edge.bottom,py+1);
+     peakAlpha=Math.max(peakAlpha,alpha);luminance+=(.2126*data[i]+.7152*data[i+1]+.0722*data[i+2])*alpha;weight+=alpha;
+    }
    }
   }
   const hasArtwork=maxX>=minX&&maxY>=minY;
-  return {hasTransparency,hasArtwork,bounds:hasArtwork?{left:minX,top:minY,right:maxX+1,bottom:maxY+1}:fullBounds,outlineColor:weight&&luminance/weight<140?"white":"black"};
- }catch{return {hasTransparency:false,hasArtwork:true,bounds:fullBounds,outlineColor:"black"}}
+  const bounds=hasArtwork?{left:minX,top:minY,right:maxX+1,bottom:maxY+1}:fullBounds;
+  // Nearly invisible export noise must not determine the visible logo's center.
+  // Keep exact alpha bounds separately, and use a relative threshold so faint
+  // artwork and disconnected visible accents still participate in framing.
+  const framingBounds=hasArtwork?{left:sw,top:sh,right:0,bottom:0}:fullBounds;
+  for(let alpha=Math.max(1,Math.ceil(peakAlpha*.02));alpha<=peakAlpha;alpha++){
+   const edge=edges[alpha];framingBounds.left=Math.min(framingBounds.left,edge.left);framingBounds.top=Math.min(framingBounds.top,edge.top);framingBounds.right=Math.max(framingBounds.right,edge.right);framingBounds.bottom=Math.max(framingBounds.bottom,edge.bottom);
+  }
+  return {hasTransparency,hasArtwork,bounds,framingBounds,outlineColor:weight&&luminance/weight<140?"white":"black"};
+ }catch{return {hasTransparency:false,hasArtwork:true,bounds:fullBounds,framingBounds:fullBounds,outlineColor:"black"}}
 }
 function loadImage(file){
  const allowed=["image/png","image/jpeg","image/webp","image/avif"];
  if(!file||!allowed.includes(file.type)){ui.message.textContent=t("chooseImageError");ui.message.className="export-message error";return}
  if(state.url)URL.revokeObjectURL(state.url);state.file=file;state.url=URL.createObjectURL(file);const image=new Image();
- image.onload=()=>{state.image=image;const analysis=analyzeImage(image);state.hasTransparency=analysis.hasTransparency;state.hasArtwork=analysis.hasArtwork;state.alphaBounds=analysis.bounds;state.outlineColor=analysis.outlineColor;state.shiftX=0;state.shiftY=0;state.zoom=1;ui.allowUpscale.checked=false;ui.image.setAttribute("aria-label",file.name);ui.fileState.textContent=t("fileStateLoaded");ui.fileName.textContent=file.name;ui.fileSize.textContent=image.naturalWidth+" × "+image.naturalHeight+" px · "+bytesLabel(file.size);ui.fileDetails.hidden=false;ui.drop.hidden=true;paint();if(state.preset.id==="season-poster")autoSeasonStyle()};
+ image.onload=()=>{state.image=image;const analysis=analyzeImage(image);state.hasTransparency=analysis.hasTransparency;state.hasArtwork=analysis.hasArtwork;state.alphaBounds=analysis.bounds;state.framingBounds=analysis.framingBounds;state.outlineColor=analysis.outlineColor;state.shiftX=0;state.shiftY=0;state.zoom=1;ui.allowUpscale.checked=false;ui.image.setAttribute("aria-label",file.name);ui.fileState.textContent=t("fileStateLoaded");ui.fileName.textContent=file.name;ui.fileSize.textContent=image.naturalWidth+" × "+image.naturalHeight+" px · "+bytesLabel(file.size);ui.fileDetails.hidden=false;ui.drop.hidden=true;paint();if(state.preset.id==="season-poster")autoSeasonStyle()};
  image.onerror=()=>{ui.message.textContent=t("openImageError");ui.message.className="export-message error";URL.revokeObjectURL(state.url);state.url=null};image.src=state.url;
 }
 function removeImage(){
- if(state.url)URL.revokeObjectURL(state.url);state.url=null;state.image=null;state.file=null;state.hasTransparency=false;state.hasArtwork=false;state.alphaBounds=null;state.renderKey=null;ui.input.value="";ui.fileDetails.hidden=true;ui.drop.hidden=false;ui.fileState.textContent=t("fileStateEmpty");state.shiftX=0;state.shiftY=0;state.zoom=1;paint();
+ if(state.url)URL.revokeObjectURL(state.url);state.url=null;state.image=null;state.file=null;state.hasTransparency=false;state.hasArtwork=false;state.alphaBounds=null;state.framingBounds=null;state.renderKey=null;ui.input.value="";ui.fileDetails.hidden=true;ui.drop.hidden=false;ui.fileState.textContent=t("fileStateEmpty");state.shiftX=0;state.shiftY=0;state.zoom=1;paint();
 }
 function move(dx,dy){if(!state.image)return;state.shiftX+=dx*state.preset.width*.025;state.shiftY+=dy*state.preset.height*.025;constrainPosition();paint()}
 function startDrag(e){if(!state.image)return;state.dragging=true;state.pointerX=e.clientX;state.pointerY=e.clientY;ui.board.classList.add("dragging");ui.board.setPointerCapture(e.pointerId);e.preventDefault()}
