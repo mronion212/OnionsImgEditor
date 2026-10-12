@@ -58,7 +58,7 @@
     <section id="clearlogo-guide" class="clearlogo-guide" hidden aria-labelledby="clearlogo-guide-title">
       <div class="clearlogo-heading"><span class="clearlogo-mark" aria-hidden="true">PNG</span><div><h2 id="clearlogo-guide-title" data-i18n="clearlogoChecklist">ClearLogo upload checklist</h2><p data-i18n="clearlogoIntro">Check every point before exporting and uploading.</p></div></div>
       <ol class="clearlogo-checklist">
-        <li><strong data-i18n="clearlogoCanvasTitle">Exact canvas</strong><span data-i18n="clearlogoCanvasCopy">Export at exactly 800 × 310 px. Keep the logo's proportions; never stretch it.</span></li>
+        <li><strong data-i18n="clearlogoCanvasTitle">Canvas and source size</strong><span data-i18n="clearlogoCanvasCopy">800 × 310 px is the base size. Export at the largest whole multiple supported by the visible logo's resolution. Keep its proportions; margins and outlines scale with the export.</span></li>
         <li><strong data-i18n="clearlogoAlphaTitle">Real transparency</strong><span data-i18n="clearlogoAlphaCopy">Use a PNG with transparent pixels around the logo. A checkerboard is only a preview; it does not prove transparency.</span></li>
         <li><strong data-i18n="clearlogoCenterTitle">Center the visible logo</strong><span data-i18n="clearlogoCenterCopy">Center the non-transparent artwork, not the file edges. Leave 10 px clear on every side; the logo can fill up to 780 × 290 px.</span></li>
         <li><strong data-i18n="clearlogoSizeTitle">Keep the original scale</strong><span data-i18n="clearlogoSizeCopy">Use a crisp, sufficiently large source. Do not enlarge or distort it; crop a larger image if needed.</span></li>
@@ -116,13 +116,18 @@
     <details class="panel-tip"><summary><b aria-hidden="true">i</b><strong data-i18n="qualityTitle">Keep the original quality</strong></summary><p data-i18n="qualityCopy">PNG encoding is lossless. JPEG is lossy. Cropping or resizing changes pixels, and small sources are never silently enlarged.</p></details>
   </div>
     <section class="inspector-section export-settings">
+      <div id="export-resolution-options" hidden>
+        <label class="field-label" for="export-resolution" data-i18n="exportResolution">Export resolution</label>
+        <select id="export-resolution" class="select-control" aria-describedby="export-resolution-help"><option value="auto" data-i18n="resolutionAuto">Automatic · highest source resolution</option><option value="base" data-i18n="resolutionBase">1× · base size</option></select>
+        <p id="export-resolution-help" class="format-note" aria-live="polite"></p>
+      </div>
       <p id="format-note" class="format-note">PNG preserves detail and transparency without extra compression loss.</p>
       <div id="jpeg-options" hidden><label class="field-label" for="jpeg-quality"><span data-i18n="jpegQuality">JPEG quality</span><output id="jpeg-quality-value">96%</output></label><input id="jpeg-quality" type="range" min=".8" max="1" step=".01" value=".96"><label class="field-label" for="jpeg-background" data-i18n="transparentBackground">Background for transparency</label><input id="jpeg-background" class="color-input" type="color" value="#ffffff"></div>
       <div id="upscale-option" class="upscale-option" hidden><label class="check-option"><input id="allow-upscale" type="checkbox"><span data-i18n="allowUpscale">Allow resizing this image upward</span></label><p id="upscale-note" data-i18n="upscaleNote">This runs locally in your browser. Resizing adds pixels but cannot restore lost detail; inspect the result before uploading.</p></div>
     </section>
   <details class="right-panel"><summary class="checks-summary"><span data-i18n="checksTitle">Checks</span><span aria-hidden="true">⌄</span></summary>
     <div class="inspector-header"><span class="eyebrow" data-i18n="stepOutput">03 / OUTPUT</span><b>⌗</b></div>
-    <div class="output-size-card"><span data-i18n="canvasSize">CANVAS SIZE</span><strong id="output-size">680 <i>×</i> 1000</strong><small data-i18n="exactPixels">pixels · exact</small></div>
+    <div class="output-size-card"><span data-i18n="canvasSize">CANVAS SIZE</span><strong id="output-size">680 <i>×</i> 1000</strong><small id="output-scale">pixels · exact</small></div>
     <section class="inspector-section">
       <div class="inspector-title"><h2 data-i18n="checksTitle">Checks</h2><span class="live-tag"><i></i>LIVE</span></div>
       <div id="resolution-check" class="check-row neutral"><i class="check-symbol">•</i><span><strong data-i18n="sourceResolution">Source resolution</strong><small id="resolution-copy">Add an image</small></span></div>

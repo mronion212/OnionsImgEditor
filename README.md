@@ -55,6 +55,7 @@ npm run build
 - Drag, keyboard, nudge buttons, zoom, and clear center-alignment feedback.
 - Season label with automatic placement in a quiet lower or upper area, sampled colors for contrast, free drag positioning, transparent background, and manual color and type controls.
 - Transparent PNG is required for ClearLogo and ClearArt presets; JPEG is disabled for those types.
+- ClearLogo and Episode HD export at the largest whole multiple of their base dimensions supported by the source and current crop, without upscaling (up to 12,000 px per side and 40 megapixels). A 1920 × 1080 episode image stays 1920 × 1080; a sufficiently detailed logo can export at 1600 × 620, 2400 × 930, or larger. Export resolution defaults to Automatic; choose 1× for the base size. The current dimensions appear beside the control and in Checks.
 - ClearLogo fitting and centering use the exact bounds of non-transparent source pixels, including disconnected accents. Fit & center fills the 780 × 290 px safe area proportionally when the source is large enough. Zooming and dragging keep the visible logo and optional outline inside the 10 px gutter.
 - Optional 1–4 px contour outlines for transparent artwork: automatic light/dark, black, white, or a double white-and-black outline. The double option adds the chosen width for each ring. Preview and export use the same renderer; letter holes retain transparency unless the selected outline fills a narrow gap.
 - Checkerboard, white, and black test backgrounds affect the preview only. PNG exports stay transparent. Use the double outline to help contrast on both light and dark backgrounds and inspect the result at the intended display size.
@@ -62,6 +63,8 @@ npm run build
 - Image processing happens in the browser. Images are not sent to this app or stored by it.
 
 ## Image quality
+
+ClearLogo's 800 × 310 and Episode HD's 640 × 360 are base sizes, rather than fixed export sizes. Automatic resolution uses the visible logo's pixels (ignoring transparent padding) or the episode crop to choose a whole multiple. Zooming in can reduce the available multiple. Logo gutters and outlines scale proportionally; exports render directly from the original image, independently of the smaller workspace preview. TheTVDB's linked rules allow initial uploads at least as large as the listed dimensions, and TheTVDB may resize or compress files after upload.
 
 PNG encoding preserves the exported pixels without additional compression loss. JPEG encoding is lossy. Cropping discards pixels outside the frame, and resizing resamples pixels; neither can guarantee that no image detail changes. An undersized source blocks export by default. You can explicitly allow browser-based resizing to the chosen canvas size; this is standard interpolation, not AI restoration. It cannot recover missing detail. TheTVDB's general artwork guidelines prohibit upscaling, so use a resized export for other destinations or drafts rather than uploading it there. Images still remain in the browser.
 
@@ -72,6 +75,8 @@ The season-label placement is a visual heuristic that samples quieter corners an
 With the local server running, run `npm run test:browser` with Playwright available (installed locally or supplied through `NODE_PATH`) and Microsoft Edge installed. The checks exercise exact alpha bounds, asymmetric padding, thin isolated pixels, proportional fitting, zoom/drag constraints, outline colors and widths, exported PNG transparency and safe margins, source-size checks, Dutch controls, and mobile layout.
 
 Run `npm run test:layout` for 64 responsive layouts from 320 to 5120 pixels wide, in English and Dutch and both themes. It checks matching top/bottom edges of the canvas and inspector, aligned format/export controls, canvas uploading and all presets with a loaded image. Set `EDITOR_SCREENSHOTS` to an output directory to save visual previews. The editor has one large canvas and a unified inspector with a persistent export action. Below 960 pixels, controls move beneath the canvas without nested scrolling. Its width is capped at 2200 pixels to keep controls within reach on ultrawide displays.
+
+Run `npm run test:resolution` to verify native HD/4K pixels in actual downloads, whole-multiple selection, cropping and zoom, the base-size override, high-resolution PNG/JPEG exports, logo transparency and proportional gutters/outlines, padded or undersized sources, and automatic export limits.
 
 ## TheTVDB references
 

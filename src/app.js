@@ -2,11 +2,11 @@ const PRESETS = [
   {id:"poster",width:680,height:1000,shape:"poster",mode:"cover",icon:"▯",faq:"8"},
   {id:"season-poster",width:680,height:1000,shape:"poster season",mode:"cover",icon:"▯",faq:"8"},
   {id:"background",width:1920,height:1080,shape:"wide",mode:"cover",icon:"▱",faq:"10"},
-  {id:"clearlogo",width:800,height:310,shape:"logo",mode:"contain",icon:"━",faq:"96",gutter:10,pngOnly:true},
+  {id:"clearlogo",width:800,height:310,shape:"logo",mode:"contain",icon:"━",faq:"96",gutter:10,pngOnly:true,preserveResolution:true},
   {id:"banner",width:758,height:140,shape:"wide",mode:"cover",icon:"▱",faq:"11"},
   {id:"icon",width:1024,height:1024,shape:"square",mode:"cover",icon:"□",faq:"12"},
   {id:"clearart",width:1000,height:562,shape:"wide",mode:"contain",icon:"▱",faq:"95",pngOnly:true},
-  {id:"episode-hd",width:640,height:360,shape:"wide",mode:"cover",icon:"▱",faq:"6"},
+  {id:"episode-hd",width:640,height:360,shape:"wide",mode:"cover",icon:"▱",faq:"6",preserveResolution:true},
   {id:"episode-sd",width:640,height:480,shape:"poster",mode:"cover",icon:"▯",faq:"6"}
 ];
 
@@ -38,7 +38,7 @@ Object.assign(COPY.en,{
  themeDarkLabel:"Switch to dark mode",themeLightLabel:"Switch to light mode",
  formatPng:"PNG keeps transparency. JPEG fills transparent areas with a background color and is available for presets that do not require transparency.",formatJpeg:"JPEG is smaller but lossy. Any transparent areas are filled with the selected background color.",formatPngRequired:"ClearLogo and ClearArt require PNG transparency. JPEG is unavailable for these presets; choose another preset to export JPEG.",
  clearlogoSummary:"ClearLogo has strict transparency and alignment requirements. Use this checklist to prepare a file that is ready to upload.",clearlogoChecklist:"ClearLogo upload checklist",clearlogoIntro:"Check every point before exporting and uploading.",
- clearlogoCanvasTitle:"Canvas and source size",clearlogoCanvasCopy:"Use a source of at least 800 × 310 px and export an exact 800 × 310 px canvas. Keep the logo's proportions; never stretch it.",
+ clearlogoCanvasTitle:"Canvas and source size",clearlogoCanvasCopy:"800 × 310 px is the base size. Export at the largest whole multiple supported by the visible logo's resolution. Keep its proportions; margins and outlines scale with the export.",
  clearlogoAlphaTitle:"Real transparency",clearlogoAlphaCopy:"Use a PNG with transparent pixels around the logo. A checkerboard is only a preview; it does not prove that the source is transparent.",
  clearlogoCenterTitle:"Center and size the visible logo",clearlogoCenterCopy:"Center the non-transparent artwork, not the file edges. Fill the 780 × 290 px safe area as much as possible without stretching; keep the logo itself out of the 10 px gutter. A drop shadow or glow may extend into the gutter.",
  clearlogoSizeTitle:"Keep the original scale",clearlogoSizeCopy:"Use a crisp, sufficiently large source. Do not enlarge or distort it; crop a larger image if needed.",
@@ -51,7 +51,7 @@ Object.assign(COPY.nl,{
  themeDarkLabel:"Schakel naar donkere modus",themeLightLabel:"Schakel naar lichte modus",
  formatPng:"PNG behoudt transparantie. JPEG vult transparante delen met een achtergrondkleur en is beschikbaar bij presets die geen transparantie vereisen.",formatJpeg:"JPEG is kleiner maar verliesgevend. Transparante delen worden gevuld met de gekozen achtergrondkleur.",formatPngRequired:"ClearLogo en ClearArt vereisen een transparante PNG. JPEG is voor deze presets niet beschikbaar; kies een andere preset om als JPEG te exporteren.",
  clearlogoSummary:"Voor ClearLogo gelden strikte eisen voor transparantie en uitlijning. Met deze checklist maak je het bestand klaar voor upload.",clearlogoChecklist:"ClearLogo-uploadchecklist",clearlogoIntro:"Loop alle punten na voordat je exporteert en uploadt.",
- clearlogoCanvasTitle:"Canvas- en bronformaat",clearlogoCanvasCopy:"Gebruik een bron van minimaal 800 × 310 px en exporteer een canvas van exact 800 × 310 px. Behoud de verhoudingen van het logo en rek het nooit uit.",
+ clearlogoCanvasTitle:"Canvas- en bronformaat",clearlogoCanvasCopy:"800 × 310 px is het basisformaat. Exporteer op het grootste hele veelvoud dat de resolutie van het zichtbare logo toelaat. Behoud de verhoudingen; marges en omlijning schalen mee met de export.",
  clearlogoAlphaTitle:"Echte transparantie",clearlogoAlphaCopy:"Gebruik een PNG met transparante pixels rondom het logo. Een schaakbord is alleen een voorbeeldweergave; het bewijst niet dat de bron transparant is.",
  clearlogoCenterTitle:"Centreer en schaal het zichtbare logo",clearlogoCenterCopy:"Centreer het niet-transparante artwork, niet de randen van het bronbestand. Vul het veilige vlak van 780 × 290 px zo veel mogelijk zonder uitrekken; houd het logo zelf buiten de marge van 10 px. Een schaduw of gloed mag wel in die marge vallen.",
  clearlogoSizeTitle:"Behoud de oorspronkelijke schaal",clearlogoSizeCopy:"Gebruik een scherpe bron met voldoende pixels. Vergroot of vervorm die niet; snijd een grotere afbeelding indien nodig bij.",
@@ -80,12 +80,15 @@ Object.assign(COPY.nl,{previewBackground:"Testachtergrond",backgroundChecker:"Sc
 Object.assign(COPY.en,{pageTitle:"Artwork editor",pageIntro:"Your workspace for TheTVDB artwork.",toolsTitle:"ARTWORK SETTINGS",localBadge:"Everything stays on your device",canvasReady:"Start with an image",canvasHint:"Drop a file onto this workspace<br>or choose one from your device.",browseImage:"Choose an image",stageCaption:"Drag to reposition · arrow keys to fine-tune"});
 Object.assign(COPY.nl,{pageTitle:"Artwork editor",pageIntro:"Je werkruimte voor TheTVDB-artwork.",toolsTitle:"INSTELLINGEN",localBadge:"Alles blijft op je apparaat",canvasReady:"Begin met een afbeelding",canvasHint:"Sleep een bestand naar deze werkruimte<br>of kies er één op je apparaat.",browseImage:"Kies een afbeelding",stageCaption:"Sleep om te verplaatsen · pijltjestoetsen voor precisie"});
 
+Object.assign(COPY.en,{exportResolution:"Export resolution",resolutionAuto:"Automatic · highest source resolution",resolutionBase:"1× · base size",resolutionHelp:"{width} × {height} px · {multiple}× base size. Automatic uses the largest whole multiple supported by this crop, without enlarging the source (up to 12,000 px per side / 40 MP).",outputMultiple:"pixels · {multiple}× base size",baseDimensions:"{width} × {height} px · base",qualityCopy:"ClearLogo and Episode HD keep the largest whole multiple of the base size supported by the source and crop. PNG avoids extra encoding loss. Enlarging cannot create new detail.","guide_episode-hd":"640 × 360 px is the HD base size (16:9). Export keeps a whole multiple supported by the source and crop. Use a unique episode image; avoid spoilers, title cards, subtitles and watermarks."});
+Object.assign(COPY.nl,{exportResolution:"Exportresolutie",resolutionAuto:"Automatisch · hoogste bronresolutie",resolutionBase:"1× · basisformaat",resolutionHelp:"{width} × {height} px · {multiple}× basisformaat. Automatisch kiest het grootste hele veelvoud dat deze uitsnede toelaat, zonder de bron te vergroten (maximaal 12.000 px per zijde / 40 MP).",outputMultiple:"pixels · {multiple}× basisformaat",baseDimensions:"{width} × {height} px · basis",qualityCopy:"ClearLogo en Aflevering HD behouden het grootste hele veelvoud van het basisformaat dat de bron en uitsnede toelaten. PNG voegt geen coderingsverlies toe. Vergroten creëert geen nieuwe details.","guide_episode-hd":"640 × 360 px is het HD-basisformaat (16:9). De export behoudt een heel veelvoud dat de bron en uitsnede toelaten. Gebruik een uniek afleveringsbeeld; vermijd spoilers, titelkaarten, ondertiteling en watermerken."});
+
 const state={preset:PRESETS[0],custom:false,file:null,image:null,url:null,hasTransparency:false,hasArtwork:false,alphaBounds:null,outlineColor:"black",renderKey:null,shiftX:0,shiftY:0,zoom:1,dragging:false,pointerX:0,pointerY:0,stampX:.05,stampY:.05,stampDragging:false,stampPointerX:0,stampPointerY:0,language:"en"};
 const $=(s)=>document.querySelector(s);
 const ui={
  input:$("#file-input"),drop:$("#drop-zone"),fileState:$("#file-state"),fileDetails:$("#file-details"),fileName:$("#file-name"),fileSize:$("#file-size"),remove:$("#remove-image"),language:$("#language-select"),theme:$("#theme-toggle"),
  presetGrid:$("#preset-grid"),more:$("#more-presets"),extra:$("#extra-presets"),customW:$("#custom-width"),customH:$("#custom-height"),applyCustom:$("#apply-custom"),
- presetName:$("#selected-preset-name"),presetIcon:$("#selected-preset-icon"),dimensions:$("#selected-dimensions"),outputSize:$("#output-size"),
+ presetName:$("#selected-preset-name"),presetIcon:$("#selected-preset-icon"),dimensions:$("#selected-dimensions"),outputSize:$("#output-size"),outputScale:$("#output-scale"),resolutionOptions:$("#export-resolution-options"),exportResolution:$("#export-resolution"),resolutionHelp:$("#export-resolution-help"),
  stage:$("#stage"),board:$("#artboard"),image:$("#preview-image"),empty:$("#empty-state"),safe:$("#logo-safe-area"),stamp:$("#season-stamp"),dragHint:$("#drag-hint"),
  centerStatus:$("#center-status"),centerText:$("#center-status-text"),center:$("#center-image"),zoom:$("#zoom-slider"),zoomValue:$("#zoom-value"),
  fit:$("#fit-logo"),previewBackground:$("#preview-background"),contrastPanel:$("#logo-contrast-panel"),outline:$("#logo-outline"),outlineWidth:$("#outline-width"),outlineWidthValue:$("#outline-width-value"),safeCheck:$("#safe-area-check"),safeCopy:$("#safe-area-copy"),
@@ -126,7 +129,9 @@ function choosePreset(p){
 }
 function updatePresetInfo(){
  const p=state.preset;ui.presetName.textContent=state.custom?t("customPreset"):presetLabel(p);ui.presetIcon.textContent=state.custom?"⌗":p.icon;
- ui.dimensions.textContent=p.width+" × "+p.height+" px";ui.outputSize.innerHTML=p.width+" <i>×</i> "+p.height;ui.seasonPanel.hidden=p.id!=="season-poster";
+ const output=exportDimensions();
+ ui.dimensions.textContent=output.width+" × "+output.height+" px"+(p.preserveResolution?" · "+output.multiple+"×":"");ui.outputSize.innerHTML=output.width+" <i>×</i> "+output.height;ui.outputScale.textContent=p.preserveResolution?t("outputMultiple",output):t("exactPixels");ui.seasonPanel.hidden=p.id!=="season-poster";
+ ui.resolutionOptions.hidden=!p.preserveResolution;ui.resolutionHelp.textContent=t("resolutionHelp",output);
  ui.guideTitle.textContent=state.custom?t("customTitle"):p.width+" × "+p.height+" px · "+presetLabel(p);
  ui.clearlogoGuide.hidden=state.custom||p.id!=="clearlogo";
  ui.guideCopy.textContent=state.custom?t("customGuideline"):p.id==="clearlogo"?t("clearlogoSummary"):t("guide_"+p.id);
@@ -155,6 +160,18 @@ function geometry(){
  return {w,h,sw,sh,scale,dw,dh,x,y,base,idealScale,maxZoom,mode:p.mode,contentBounds:bounds,originX,originY};
 }
 function constrainPosition(){const g=geometry();if(!g)return;state.shiftX=g.x-g.originX;state.shiftY=g.y-g.originY}
+function exportDimensions(g=geometry()){
+ const p=state.preset;
+ let multiple=1;
+ if(p.preserveResolution&&ui.exportResolution.value==="auto"&&g&&state.hasArtwork){
+  // Work in base-size coordinates for editing; render the original source directly
+  // to the larger export. Transparent file padding must not inflate logo resolution.
+  const sourceLimit=1/g.scale;
+  const canvasLimit=Math.min(12000/p.width,12000/p.height,Math.sqrt(40000000/(p.width*p.height)));
+  multiple=Math.max(1,Math.floor(Math.min(sourceLimit,canvasLimit)+1e-9));
+ }
+ return {width:p.width*multiple,height:p.height*multiple,multiple};
+}
 function sizeBoard(){
  const ratio=state.preset.width/state.preset.height;
  const style=getComputedStyle(ui.stage);
@@ -328,14 +345,14 @@ function drawArtwork(ctx,g,rx=1,ry=rx){
  ctx.restore();
 }
 function exportImage(){
- if(!state.image||ui.download.disabled)return;const g=geometry(),canvas=document.createElement("canvas");canvas.width=g.w;canvas.height=g.h;
+ if(!state.image||ui.download.disabled)return;const g=geometry(),output=exportDimensions(g),canvas=document.createElement("canvas");canvas.width=output.width;canvas.height=output.height;
  const type=ui.format.value==="jpeg"?"image/jpeg":"image/png",ctx=canvas.getContext("2d",{alpha:type==="image/png"});ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality="high";
- if(type==="image/jpeg"){ctx.fillStyle=ui.jpegBackground.value;ctx.fillRect(0,0,g.w,g.h)}drawArtwork(ctx,g);drawSeason(ctx,g.w,g.h);ui.message.textContent=t("preparing");ui.message.className="export-message";
+ if(type==="image/jpeg"){ctx.fillStyle=ui.jpegBackground.value;ctx.fillRect(0,0,canvas.width,canvas.height)}drawArtwork(ctx,g,output.multiple);drawSeason(ctx,canvas.width,canvas.height);ui.message.textContent=t("preparing");ui.message.className="export-message";
  canvas.toBlob((blob)=>{
   if(!blob){ui.message.textContent=t("exportFailed");ui.message.className="export-message error";return}
   const ext=type==="image/jpeg"?"jpg":"png",base=state.file.name.replace(/\.[^.]+$/,"").replace(/[^a-z0-9_-]+/gi,"-")||"onion-artwork";
-  const url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download=base+"-"+g.w+"x"+g.h+"."+ext;a.click();setTimeout(()=>URL.revokeObjectURL(url),3000);const big=blob.size>10*1024*1024;
-  ui.message.textContent=big?t("downloadedTooBig",{size:bytesLabel(blob.size)}):t("downloaded",{size:bytesLabel(blob.size),width:g.w,height:g.h});ui.message.className=big?"export-message warning":"export-message";
+  const url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download=base+"-"+output.width+"x"+output.height+"."+ext;a.click();setTimeout(()=>URL.revokeObjectURL(url),3000);const big=blob.size>10*1024*1024;
+  ui.message.textContent=big?t("downloadedTooBig",{size:bytesLabel(blob.size)}):t("downloaded",{size:bytesLabel(blob.size),width:output.width,height:output.height});ui.message.className=big?"export-message warning":"export-message";
  },type,type==="image/jpeg"?Number(ui.jpegQuality.value):undefined);
 }
 
@@ -356,6 +373,7 @@ ui.stamp.addEventListener("pointermove",(e)=>{if(!state.stampDragging)return;con
 for(const event of ["pointerup","pointercancel"])ui.stamp.addEventListener(event,()=>{state.stampDragging=false});
 ui.stamp.addEventListener("keydown",(e)=>{const d={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]};if(!d[e.key])return;e.preventDefault();e.stopPropagation();const point=stampCoordinates(ui.board.clientWidth,ui.board.clientHeight,ui.stamp.offsetWidth,ui.stamp.offsetHeight);state.stampX=(point.x+d[e.key][0]*(e.shiftKey?10:2))/ui.board.clientWidth;state.stampY=(point.y+d[e.key][1]*(e.shiftKey?10:2))/ui.board.clientHeight;ui.stampPosition.value="custom";ui.autoStatus.textContent="";stampPreview()});
 ui.allowUpscale.addEventListener("change",()=>{constrainPosition();paint()});
+ui.exportResolution.addEventListener("change",paint);
 ui.format.addEventListener("change",updateFormat);ui.jpegQuality.addEventListener("input",()=>{ui.jpegQualityValue.value=Math.round(Number(ui.jpegQuality.value)*100)+"%"});ui.download.addEventListener("click",exportImage);
 ui.theme.addEventListener("click",()=>setTheme(document.documentElement.dataset.theme==="dark"?"light":"dark"));
 ui.language.addEventListener("change",()=>{state.language=ui.language.value==="nl"?"nl":"en";localStorage.setItem("onions-img-editor-language",state.language);applyLanguage();renderPresets();updateFormat();paint();if(state.preset.id==="season-poster")autoSeasonStyle()});

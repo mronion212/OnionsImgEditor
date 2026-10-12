@@ -234,6 +234,8 @@ summary::-webkit-details-marker { display: none; }
 .section-description, .format-note, .field-help { margin: 8px 0 12px; color: var(--muted); font-size: .7rem; line-height: 1.6; }
 .export-settings > .field-label { display: none; }
 .export-settings .format-note { margin: 0; }
+#export-resolution-options { margin-bottom: 12px; }
+#export-resolution-help { margin-top: 8px; }
 .season-input-wrap { min-height: 42px; display: flex; align-items: center; gap: 8px; padding: 0 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--subtle); }
 .season-input-wrap span { color: var(--muted); font-size: .78rem; }
 .season-input-wrap input { width: 60px; min-width: 0; border: 0; background: transparent; }
