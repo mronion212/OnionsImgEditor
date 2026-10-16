@@ -2,13 +2,13 @@ const PRESETS = [
   {id:"poster",width:680,height:1000,shape:"poster",mode:"cover",icon:"▯",faq:"8"},
   {id:"season-poster",width:680,height:1000,shape:"poster season",mode:"cover",icon:"▯",faq:"8"},
   {id:"background",width:1920,height:1080,shape:"wide",mode:"cover",icon:"▱",faq:"10"},
-  {id:"clearlogo",width:800,height:310,shape:"logo",mode:"contain",icon:"━",faq:"96",gutter:10,pngOnly:true,preserveResolution:true},
+  {id:"clearlogo",width:800,height:310,shape:"logo",mode:"contain",icon:"━",faq:"96",gutter:10,pngOnly:true},
   {id:"banner",width:758,height:140,shape:"wide",mode:"cover",icon:"▱",faq:"11"},
   {id:"icon",width:1024,height:1024,shape:"square",mode:"cover",icon:"□",faq:"12"},
   {id:"clearart",width:1000,height:562,shape:"wide",mode:"contain",icon:"▱",faq:"95",pngOnly:true},
-  {id:"episode-hd",width:640,height:360,shape:"wide",mode:"cover",icon:"▱",faq:"6",preserveResolution:true},
+  {id:"episode-hd",width:640,height:360,shape:"wide",mode:"cover",icon:"▱",faq:"6"},
   {id:"episode-sd",width:640,height:480,shape:"poster",mode:"cover",icon:"▯",faq:"6"}
-];
+].map(preset => ({...preset,preserveResolution:true}));
 
 const COPY = {
  en:{
@@ -80,8 +80,8 @@ Object.assign(COPY.nl,{previewBackground:"Testachtergrond",backgroundChecker:"Sc
 Object.assign(COPY.en,{pageTitle:"Artwork editor",pageIntro:"Your workspace for TheTVDB artwork.",toolsTitle:"ARTWORK SETTINGS",localBadge:"Everything stays on your device",canvasReady:"Start with an image",canvasHint:"Drop a file onto this workspace<br>or choose one from your device.",browseImage:"Choose an image",stageCaption:"Drag to reposition · arrow keys to fine-tune"});
 Object.assign(COPY.nl,{pageTitle:"Artwork editor",pageIntro:"Je werkruimte voor TheTVDB-artwork.",toolsTitle:"INSTELLINGEN",localBadge:"Alles blijft op je apparaat",canvasReady:"Begin met een afbeelding",canvasHint:"Sleep een bestand naar deze werkruimte<br>of kies er één op je apparaat.",browseImage:"Kies een afbeelding",stageCaption:"Sleep om te verplaatsen · pijltjestoetsen voor precisie"});
 
-Object.assign(COPY.en,{exportResolution:"Export resolution",resolutionAuto:"Automatic · highest source resolution",resolutionBase:"1× · base size",resolutionHelp:"{width} × {height} px · {multiple}× base size. Automatic uses the largest whole multiple supported by this crop, without enlarging the source (up to 12,000 px per side / 40 MP).",outputMultiple:"pixels · {multiple}× base size",baseDimensions:"{width} × {height} px · base",qualityCopy:"ClearLogo and Episode HD keep the largest whole multiple of the base size supported by the source and crop. PNG avoids extra encoding loss. Enlarging cannot create new detail.","guide_episode-hd":"640 × 360 px is the HD base size (16:9). Export keeps a whole multiple supported by the source and crop. Use a unique episode image; avoid spoilers, title cards, subtitles and watermarks."});
-Object.assign(COPY.nl,{exportResolution:"Exportresolutie",resolutionAuto:"Automatisch · hoogste bronresolutie",resolutionBase:"1× · basisformaat",resolutionHelp:"{width} × {height} px · {multiple}× basisformaat. Automatisch kiest het grootste hele veelvoud dat deze uitsnede toelaat, zonder de bron te vergroten (maximaal 12.000 px per zijde / 40 MP).",outputMultiple:"pixels · {multiple}× basisformaat",baseDimensions:"{width} × {height} px · basis",qualityCopy:"ClearLogo en Aflevering HD behouden het grootste hele veelvoud van het basisformaat dat de bron en uitsnede toelaten. PNG voegt geen coderingsverlies toe. Vergroten creëert geen nieuwe details.","guide_episode-hd":"640 × 360 px is het HD-basisformaat (16:9). De export behoudt een heel veelvoud dat de bron en uitsnede toelaten. Gebruik een uniek afleveringsbeeld; vermijd spoilers, titelkaarten, ondertiteling en watermerken."});
+Object.assign(COPY.en,{exportResolution:"Export resolution",resolutionAuto:"Automatic · highest source resolution",resolutionBase:"1× · base size",resolutionHelp:"{width} × {height} px · {multiple}× base size. Automatic uses the largest whole multiple supported by this crop, without enlarging the source (up to 12,000 px per side / 40 MP).",outputMultiple:"pixels · {multiple}× base size",baseDimensions:"{width} × {height} px · base",qualityCopy:"All image types keep the largest whole multiple of the base size supported by the source and crop. PNG avoids extra encoding loss. Enlarging cannot create new detail.","guide_episode-hd":"640 × 360 px is the HD base size (16:9). Export keeps a whole multiple supported by the source and crop. Use a unique episode image; avoid spoilers, title cards, subtitles and watermarks."});
+Object.assign(COPY.nl,{exportResolution:"Exportresolutie",resolutionAuto:"Automatisch · hoogste bronresolutie",resolutionBase:"1× · basisformaat",resolutionHelp:"{width} × {height} px · {multiple}× basisformaat. Automatisch kiest het grootste hele veelvoud dat deze uitsnede toelaat, zonder de bron te vergroten (maximaal 12.000 px per zijde / 40 MP).",outputMultiple:"pixels · {multiple}× basisformaat",baseDimensions:"{width} × {height} px · basis",qualityCopy:"Alle afbeeldingstypen behouden het grootste hele veelvoud van het basisformaat dat de bron en uitsnede toelaten. PNG voegt geen coderingsverlies toe. Vergroten creëert geen nieuwe details.","guide_episode-hd":"640 × 360 px is het HD-basisformaat (16:9). De export behoudt een heel veelvoud dat de bron en uitsnede toelaten. Gebruik een uniek afleveringsbeeld; vermijd spoilers, titelkaarten, ondertiteling en watermerken."});
 
 const state={preset:PRESETS[0],custom:false,file:null,image:null,url:null,hasTransparency:false,hasArtwork:false,alphaBounds:null,framingBounds:null,outlineColor:"black",renderKey:null,shiftX:0,shiftY:0,zoom:1,dragging:false,pointerX:0,pointerY:0,stampX:.05,stampY:.05,stampDragging:false,stampPointerX:0,stampPointerY:0,language:"en"};
 const $=(s)=>document.querySelector(s);
@@ -320,7 +320,7 @@ function setCustom(){
  const w=Math.round(Number(ui.customW.value)),h=Math.round(Number(ui.customH.value));
  if(!Number.isFinite(w)||!Number.isFinite(h)||w<1||h<1||w>12000||h>12000){ui.message.textContent=t("customSizeError");ui.message.className="export-message error";return}
  if(w*h>40000000){ui.message.textContent=t("customTooLarge");ui.message.className="export-message error";return}
- state.preset={id:"custom",width:w,height:h,shape:w>h?"wide":"poster",mode:"cover",icon:"⌗"};state.custom=true;state.shiftX=0;state.shiftY=0;state.zoom=1;ui.allowUpscale.checked=false;ui.seasonPanel.hidden=true;renderPresets();updateFormat();paint();
+ state.preset={id:"custom",width:w,height:h,shape:w>h?"wide":"poster",mode:"cover",icon:"⌗",preserveResolution:true};state.custom=true;state.shiftX=0;state.shiftY=0;state.zoom=1;ui.allowUpscale.checked=false;ui.seasonPanel.hidden=true;renderPresets();updateFormat();paint();
 }
 function updateFormat(){
  const jpegOption=ui.format.querySelector('option[value="jpeg"]'),requiresPng=Boolean(state.preset.pngOnly);jpegOption.disabled=requiresPng;if(requiresPng&&ui.format.value==="jpeg")ui.format.value="png";

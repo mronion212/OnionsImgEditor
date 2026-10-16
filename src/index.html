@@ -7,8 +7,8 @@
   <meta name="description" content="Prepare TheTVDB artwork with precise crops, quality checks and presets. Your images stay on your device.">
   <title>Onion's Img Editor — TheTVDB artwork</title>
   <link rel="icon" href="./logo.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="./styles.css?v=1.4.0">
-  <script type="module" src="./app.js?v=1.4.0"></script>
+  <link rel="stylesheet" href="./styles.css?v=1.4.1">
+  <script type="module" src="./app.js?v=1.4.1"></script>
 </head>
 <body>
 <header class="topbar">
@@ -122,7 +122,7 @@
         <p id="export-resolution-help" class="format-note" aria-live="polite"></p>
       </div>
       <p id="format-note" class="format-note">PNG preserves detail and transparency without extra compression loss.</p>
-      <div id="jpeg-options" hidden><label class="field-label" for="jpeg-quality"><span data-i18n="jpegQuality">JPEG quality</span><output id="jpeg-quality-value">96%</output></label><input id="jpeg-quality" type="range" min=".8" max="1" step=".01" value=".96"><label class="field-label" for="jpeg-background" data-i18n="transparentBackground">Background for transparency</label><input id="jpeg-background" class="color-input" type="color" value="#ffffff"></div>
+      <div id="jpeg-options" hidden><label class="field-label" for="jpeg-quality"><span data-i18n="jpegQuality">JPEG quality</span><output id="jpeg-quality-value">100%</output></label><input id="jpeg-quality" type="range" min=".8" max="1" step=".01" value="1"><label class="field-label" for="jpeg-background" data-i18n="transparentBackground">Background for transparency</label><input id="jpeg-background" class="color-input" type="color" value="#ffffff"></div>
       <div id="upscale-option" class="upscale-option" hidden><label class="check-option"><input id="allow-upscale" type="checkbox"><span data-i18n="allowUpscale">Allow resizing this image upward</span></label><p id="upscale-note" data-i18n="upscaleNote">This runs locally in your browser. Resizing adds pixels but cannot restore lost detail; inspect the result before uploading.</p></div>
     </section>
   <details class="right-panel"><summary class="checks-summary"><span data-i18n="checksTitle">Checks</span><span aria-hidden="true">⌄</span></summary>

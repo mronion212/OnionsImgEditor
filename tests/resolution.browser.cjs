@@ -8,6 +8,7 @@ const path = require('node:path');
   const browser = await chromium.launch({ channel: 'msedge', headless: true });
   try {
     const page = await browser.newPage({ viewport: { width: 1500, height: 1000 } });
+    page.setDefaultTimeout(15000);
     const errors = [];
     page.on('pageerror', error => errors.push(error.message));
     await page.route('**/app.js*', async route => {
@@ -44,6 +45,7 @@ const path = require('node:path');
       assert.equal(await page.locator('#selected-dimensions').textContent(), `${width} × ${height} px · ${multiple}×`);
     }
     async function downloadPixels(jpeg = false) {
+      assert.equal(await page.locator('#download-button').isDisabled(), false, 'export is enabled');
       const event = page.waitForEvent('download');await page.locator('#download-button').click();
       const download = await event, stream = await download.createReadStream(), chunks = [];
       for await (const chunk of stream) chunks.push(chunk);
@@ -114,8 +116,37 @@ const path = require('node:path');
     await page.selectOption('#language-select', 'nl');
     assert.match(await page.locator('#export-resolution-help').textContent(), /1× basisformaat/);
     await page.locator('[data-preset="poster"]').click();
-    assert.equal(await page.locator('#export-resolution-options').isVisible(), false);
+    assert.equal(await page.locator('#export-resolution-options').isVisible(), true);
     assert.deepEqual(await page.evaluate(() => window.editorTest.exportDimensions()), { width: 680, height: 1000, multiple: 1 });
+    await page.selectOption('#language-select', 'en');
+    assert.equal(await page.locator('#jpeg-quality').inputValue(), '1');
+    for (const [preset, width, height] of [
+      ['poster',680,1000],['season-poster',680,1000],['background',1920,1080],
+      ['banner',758,140],['icon',1024,1024],['clearart',1000,562],['episode-sd',640,480]
+    ]) {
+      await page.locator('[data-preset="' + preset + '"]').click();
+      if (preset === 'season-poster') await page.locator('#season-panel .switch').click();
+      await upload(width * 2, height * 2, preset === 'clearart');await expectSize(width * 2, height * 2, 2);
+      const pixels = await downloadPixels();
+      console.log('Verified native export:', preset, pixels.width, pixels.height);
+      assert.equal(pixels.differences, 0, preset + ' retains native detail in the actual PNG');
+      await page.selectOption('#export-resolution', 'base');await expectSize(width, height, 1);
+      await page.selectOption('#export-resolution', 'auto');
+      await upload(width * 2 - 1, height * 2);
+      if (preset === 'clearart') await expectSize(width * 2, height * 2, 2);
+      else await expectSize(width, height, 1);
+      await upload(Math.floor(width / 2), Math.floor(height / 2));
+      assert.equal(await page.locator('#download-button').isDisabled(), true, preset + ' blocks upscaling');
+    }
+    await page.locator('[data-preset="poster"]').click();
+    await upload(1360,2000);
+    await page.locator('#zoom-slider').evaluate(node => {node.value = '1.5';node.dispatchEvent(new Event('input'));});
+    await expectSize(680,1000,1);
+    // Custom dimensions use the same automatic source-resolution policy.
+    await page.locator('.custom-heading').click();
+    await page.locator('#custom-width').fill('340');await page.locator('#custom-height').fill('500');
+    await page.locator('#apply-custom').click();await expectSize(1360,2000,4);
+    assert.equal((await downloadPixels()).differences, 0);
     await page.locator('#remove-image').click();
     await page.locator('[data-preset="clearlogo"]').click();await expectSize(800, 310, 1);
     // The existing canvas limits also bound automatic resolution for huge sources.
@@ -128,6 +159,6 @@ const path = require('node:path');
     });
     assert.ok(limits.width <= 12000 && limits.height <= 12000 && limits.width * limits.height <= 40000000);
     assert.deepEqual(errors, []);
-    console.log('PASS: native HD/4K pixel detail, whole multiples, wide crop, zoom, base override, undersized sources, high-resolution logo alpha/gutters/outline, padded logos, Dutch copy and export limits.');
+    console.log('PASS: all presets and custom sizes, native PNG detail, JPEG maximum default, HD/4K pixels, whole multiples, wide crop, zoom, base override, undersized sources, high-resolution logo alpha/gutters/outline, padded logos, Dutch copy and export limits.');
   } finally { await browser.close(); }
 })().catch(error => { console.error(error);process.exitCode = 1; });
