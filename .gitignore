@@ -1,4 +1,7 @@
 node_modules/
 dist/
+.release/
+onions-img-editor-*.zip
+SHA256SUMS
 .DS_Store
 Thumbs.db

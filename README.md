@@ -61,6 +61,7 @@ npm run build
 - Checkerboard, white, and black test backgrounds affect the preview only. PNG exports stay transparent. Use the double outline to help contrast on both light and dark backgrounds and inspect the result at the intended display size.
 - Source-resolution checks, an explicit local resize option for undersized artwork, TheTVDB's 10 MB upload-size guidance, and links to the official artwork rules.
 - Image processing happens in the browser. Images are not sent to this app or stored by it.
+- Import PNG, JPG, WebP, AVIF and JPEG XL (`.jxl`), including JXL downloads with an empty or generic MIME type. JXL is decoded locally in a worker using a bundled decoder; no external service or CDN is needed. Export remains PNG or JPEG. The JXL import produces an 8-bit still image; animation, HDR and original color-profile/metadata preservation are not supported.
 
 ## Image quality
 
@@ -70,7 +71,17 @@ PNG encoding preserves the exported pixels without additional compression loss. 
 
 The season-label placement is a visual heuristic that samples quieter corners and chooses a contrasting badge color. Review the result manually. A season label by itself does not make a poster season-specific.
 
+## Releases
+
+Every update to `main` runs the browser checks and creates a GitHub Release after they pass. The release includes the static site as a ZIP and its SHA-256 checksum. Release notes come from `CHANGELOG.md`.
+
+Before pushing, bump `package.json` and `package-lock.json`, update the asset versions in `src/index.html`, and add a changelog entry. Use the next patch for fixes, the next minor for new features, or the next major for breaking changes. The workflow rejects skipped version steps, mismatched versions and tags that already belong to another commit. An existing release is left unchanged when a workflow is run again.
+
+Deploy the published release to the VPS using the shared Compose command above. After updating, check the container health and the public editor page.
+
 ## Browser verification
+
+Install the test dependency with `npm ci`. Tests use Playwright and Microsoft Edge; on Linux, run `npx playwright install --with-deps msedge` first.
 
 With the local server running, run `npm run test:browser` with Playwright available (installed locally or supplied through `NODE_PATH`) and Microsoft Edge installed. The checks exercise exact alpha bounds, asymmetric padding, thin isolated pixels, proportional fitting, zoom/drag constraints, outline colors and widths, exported PNG transparency and safe margins, source-size checks, Dutch controls, and mobile layout.
 
@@ -79,6 +90,8 @@ Run `npm run test:layout` for 64 responsive layouts from 320 to 5120 pixels wide
 Run `npm run test:resolution` to verify native HD/4K pixels in actual downloads, whole-multiple selection, cropping and zoom, the base-size override, high-resolution PNG/JPEG exports, logo transparency and proportional gutters/outlines, padded or undersized sources, and automatic export limits.
 
 Run `npm run test:alignment` to check visible centering in actual high-resolution logo exports with near-invisible padding noise, detached accents, outlines, and faint artwork. Optionally set `EDITOR_ALIGNMENT_FIXTURE` to a local PNG path to check a real logo, and `EDITOR_ALIGNMENT_SCREENSHOT` to save its workspace preview.
+
+Run `npm run test:jxl` to verify real JPEG XL imports, transparent pixels, original dimensions, PNG/JPEG downloads, drag-and-drop, missing/generic MIME types, corrupt-file recovery and cancelled/replaced imports under the production Content Security Policy.
 
 ## TheTVDB references
 

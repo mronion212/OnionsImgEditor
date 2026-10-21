@@ -1,15 +1,20 @@
 {
   "name": "onions-img-editor",
-  "version": "1.4.1",
+  "version": "1.5.0",
   "private": true,
   "type": "module",
   "description": "Self-hosted, local-first image editor with TheTVDB artwork presets.",
   "scripts": {
     "build": "node build.mjs",
+    "check:release": "node scripts/check-release.mjs",
     "dev": "node server.mjs",
     "test:browser": "node tests/editor.browser.cjs",
     "test:layout": "node tests/layout.browser.cjs",
     "test:resolution": "node tests/resolution.browser.cjs",
-    "test:alignment": "node tests/alignment.browser.cjs"
+    "test:alignment": "node tests/alignment.browser.cjs",
+    "test:jxl": "node tests/jxl.browser.cjs"
+  },
+  "devDependencies": {
+    "playwright": "1.64.1"
   }
 }

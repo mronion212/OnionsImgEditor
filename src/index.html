@@ -7,8 +7,8 @@
   <meta name="description" content="Prepare TheTVDB artwork with precise crops, quality checks and presets. Your images stay on your device.">
   <title>Onion's Img Editor — TheTVDB artwork</title>
   <link rel="icon" href="./logo.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="./styles.css?v=1.4.1">
-  <script type="module" src="./app.js?v=1.4.1"></script>
+  <link rel="stylesheet" href="./styles.css?v=1.5.0">
+  <script type="module" src="./app.js?v=1.5.0"></script>
 </head>
 <body>
 <header class="topbar">
@@ -77,8 +77,8 @@
     <section class="panel-section">
       <div class="section-heading"><span class="eyebrow" data-i18n="stepImage">01 / IMAGE</span><span id="file-state" class="tiny-status">No file yet</span></div>
       <label class="upload-zone" id="drop-zone" for="file-input">
-        <input id="file-input" type="file" accept="image/png,image/jpeg,image/webp,image/avif">
-        <span class="upload-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4m-4 4 4-4 4 4M4 16v4h16v-4"/></svg></span><strong data-i18n="addImage">Add an image</strong><span data-i18n="dropOrBrowse">Drop it here or browse</span><small>PNG, JPG, WebP or AVIF</small>
+        <input id="file-input" type="file" accept="image/png,image/jpeg,image/webp,image/avif,image/jxl,.jxl">
+        <span class="upload-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4m-4 4 4-4 4 4M4 16v4h16v-4"/></svg></span><strong data-i18n="addImage">Add an image</strong><span data-i18n="dropOrBrowse">Drop it here or browse</span><small>PNG, JPG, WebP, AVIF, JXL</small>
       </label>
       <div id="file-details" class="file-details" hidden><span class="file-type-icon">IMG</span><span class="file-copy"><strong id="file-name"></strong><small id="file-size"></small></span><button id="remove-image" class="icon-button" type="button" aria-label="Remove image" data-i18n-aria="removeImage">×</button></div>
     </section>
