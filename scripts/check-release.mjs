@@ -29,8 +29,13 @@ if (tags.includes(tag)) {
 } else {
   const previousTag = tags.find(value => /^v\d+\.\d+\.\d+$/.test(value));
   const baseIndex = process.argv.indexOf('--base');
-  const base = baseIndex >= 0 ? process.argv[baseIndex + 1] : previousTag || 'HEAD^';
-  check(Boolean(base), '--base needs a Git ref.');
+  // Several commits may prepare one release before its first successful publication.
+  const previousVersionCommit = !previousTag && baseIndex < 0
+    ? git('log', '--format=%H', '--', 'package.json').split('\n')
+      .find(ref => JSON.parse(git('show', `${ref}:package.json`)).version !== version)
+    : null;
+  const base = baseIndex >= 0 ? process.argv[baseIndex + 1] : previousTag || previousVersionCommit;
+  check(Boolean(base), 'A previous version or an explicit --base Git ref is required.');
   if (previousTag && base === previousTag) git('merge-base', '--is-ancestor', previousTag, 'HEAD');
   const previousVersion = JSON.parse(git('show', `${base}:package.json`)).version;
   const [oldMajor, oldMinor, oldPatch] = parse(previousVersion);
