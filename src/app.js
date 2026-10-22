@@ -40,7 +40,7 @@ Object.assign(COPY.en,{
  themeDarkLabel:"Switch to dark mode",themeLightLabel:"Switch to light mode",
  formatPng:"PNG keeps transparency. JPEG fills transparent areas with a background color and is available for presets that do not require transparency.",formatJpeg:"JPEG is smaller but lossy. Any transparent areas are filled with the selected background color.",formatPngRequired:"ClearLogo and ClearArt require PNG transparency. JPEG is unavailable for these presets; choose another preset to export JPEG.",
  clearlogoSummary:"ClearLogo has strict transparency and alignment requirements. Use this checklist to prepare a file that is ready to upload.",clearlogoChecklist:"ClearLogo upload checklist",clearlogoIntro:"Check every point before exporting and uploading.",
- clearlogoCanvasTitle:"Canvas and source size",clearlogoCanvasCopy:"800 × 310 px is the base size. Export at the largest whole multiple supported by the visible logo's resolution. Keep its proportions; margins and outlines scale with the export.",
+ clearlogoCanvasTitle:"Canvas and source size",clearlogoCanvasCopy:"800 × 310 px is the base size. Export at the highest resolution supported by the visible logo, keeping the same aspect ratio. Margins and outlines scale with the export.",
  clearlogoAlphaTitle:"Real transparency",clearlogoAlphaCopy:"Use a PNG with transparent pixels around the logo. A checkerboard is only a preview; it does not prove that the source is transparent.",
  clearlogoCenterTitle:"Center and size the visible logo",clearlogoCenterCopy:"Center the non-transparent artwork, not the file edges. Fill the 780 × 290 px safe area as much as possible without stretching; keep the logo itself out of the 10 px gutter. A drop shadow or glow may extend into the gutter.",
  clearlogoSizeTitle:"Keep the original scale",clearlogoSizeCopy:"Use a crisp, sufficiently large source. Do not enlarge or distort it; crop a larger image if needed.",
@@ -53,7 +53,7 @@ Object.assign(COPY.nl,{
  themeDarkLabel:"Schakel naar donkere modus",themeLightLabel:"Schakel naar lichte modus",
  formatPng:"PNG behoudt transparantie. JPEG vult transparante delen met een achtergrondkleur en is beschikbaar bij presets die geen transparantie vereisen.",formatJpeg:"JPEG is kleiner maar verliesgevend. Transparante delen worden gevuld met de gekozen achtergrondkleur.",formatPngRequired:"ClearLogo en ClearArt vereisen een transparante PNG. JPEG is voor deze presets niet beschikbaar; kies een andere preset om als JPEG te exporteren.",
  clearlogoSummary:"Voor ClearLogo gelden strikte eisen voor transparantie en uitlijning. Met deze checklist maak je het bestand klaar voor upload.",clearlogoChecklist:"ClearLogo-uploadchecklist",clearlogoIntro:"Loop alle punten na voordat je exporteert en uploadt.",
- clearlogoCanvasTitle:"Canvas- en bronformaat",clearlogoCanvasCopy:"800 × 310 px is het basisformaat. Exporteer op het grootste hele veelvoud dat de resolutie van het zichtbare logo toelaat. Behoud de verhoudingen; marges en omlijning schalen mee met de export.",
+ clearlogoCanvasTitle:"Canvas- en bronformaat",clearlogoCanvasCopy:"800 × 310 px is het basisformaat. Exporteer op de hoogste resolutie die het zichtbare logo toelaat, met dezelfde beeldverhouding. Marges en omlijning schalen mee met de export.",
  clearlogoAlphaTitle:"Echte transparantie",clearlogoAlphaCopy:"Gebruik een PNG met transparante pixels rondom het logo. Een schaakbord is alleen een voorbeeldweergave; het bewijst niet dat de bron transparant is.",
  clearlogoCenterTitle:"Centreer en schaal het zichtbare logo",clearlogoCenterCopy:"Centreer het niet-transparante artwork, niet de randen van het bronbestand. Vul het veilige vlak van 780 × 290 px zo veel mogelijk zonder uitrekken; houd het logo zelf buiten de marge van 10 px. Een schaduw of gloed mag wel in die marge vallen.",
  clearlogoSizeTitle:"Behoud de oorspronkelijke schaal",clearlogoSizeCopy:"Gebruik een scherpe bron met voldoende pixels. Vergroot of vervorm die niet; snijd een grotere afbeelding indien nodig bij.",
@@ -82,8 +82,8 @@ Object.assign(COPY.nl,{previewBackground:"Testachtergrond",backgroundChecker:"Sc
 Object.assign(COPY.en,{pageTitle:"Artwork editor",pageIntro:"Your workspace for TheTVDB artwork.",toolsTitle:"ARTWORK SETTINGS",localBadge:"Everything stays on your device",canvasReady:"Start with an image",canvasHint:"Drop a file onto this workspace<br>or choose one from your device.",browseImage:"Choose an image",stageCaption:"Drag to reposition · arrow keys to fine-tune"});
 Object.assign(COPY.nl,{pageTitle:"Artwork editor",pageIntro:"Je werkruimte voor TheTVDB-artwork.",toolsTitle:"INSTELLINGEN",localBadge:"Alles blijft op je apparaat",canvasReady:"Begin met een afbeelding",canvasHint:"Sleep een bestand naar deze werkruimte<br>of kies er één op je apparaat.",browseImage:"Kies een afbeelding",stageCaption:"Sleep om te verplaatsen · pijltjestoetsen voor precisie"});
 
-Object.assign(COPY.en,{exportResolution:"Export resolution",resolutionAuto:"Automatic · highest source resolution",resolutionBase:"1× · base size",resolutionHelp:"{width} × {height} px · {multiple}× base size. Automatic uses the largest whole multiple supported by this crop, without enlarging the source (up to 12,000 px per side / 40 MP).",outputMultiple:"pixels · {multiple}× base size",baseDimensions:"{width} × {height} px · base",qualityCopy:"All image types keep the largest whole multiple of the base size supported by the source and crop. PNG avoids extra encoding loss. Enlarging cannot create new detail.","guide_episode-hd":"640 × 360 px is the HD base size (16:9). Export keeps a whole multiple supported by the source and crop. Use a unique episode image; avoid spoilers, title cards, subtitles and watermarks."});
-Object.assign(COPY.nl,{exportResolution:"Exportresolutie",resolutionAuto:"Automatisch · hoogste bronresolutie",resolutionBase:"1× · basisformaat",resolutionHelp:"{width} × {height} px · {multiple}× basisformaat. Automatisch kiest het grootste hele veelvoud dat deze uitsnede toelaat, zonder de bron te vergroten (maximaal 12.000 px per zijde / 40 MP).",outputMultiple:"pixels · {multiple}× basisformaat",baseDimensions:"{width} × {height} px · basis",qualityCopy:"Alle afbeeldingstypen behouden het grootste hele veelvoud van het basisformaat dat de bron en uitsnede toelaten. PNG voegt geen coderingsverlies toe. Vergroten creëert geen nieuwe details.","guide_episode-hd":"640 × 360 px is het HD-basisformaat (16:9). De export behoudt een heel veelvoud dat de bron en uitsnede toelaten. Gebruik een uniek afleveringsbeeld; vermijd spoilers, titelkaarten, ondertiteling en watermerken."});
+Object.assign(COPY.en,{exportResolution:"Export resolution",resolutionAuto:"Automatic · highest source resolution",resolutionBase:"1× · base size",resolutionHelp:"{width} × {height} px · {multiple}× base size. Automatic keeps the highest resolution supported by this crop, with the same aspect ratio and without enlarging the source (up to 12,000 px per side / 40 MP).",outputMultiple:"pixels · {multiple}× base size",baseDimensions:"{width} × {height} px · base",qualityCopy:"All image types keep the highest resolution supported by the source and crop, with the same aspect ratio. PNG avoids extra encoding loss. Enlarging cannot create new detail.","guide_episode-hd":"640 × 360 px is the HD base size (16:9). Export keeps the highest resolution supported by the source and crop, with the same aspect ratio. Use a unique episode image; avoid spoilers, title cards, subtitles and watermarks."});
+Object.assign(COPY.nl,{exportResolution:"Exportresolutie",resolutionAuto:"Automatisch · hoogste bronresolutie",resolutionBase:"1× · basisformaat",resolutionHelp:"{width} × {height} px · {multiple}× basisformaat. Automatisch behoudt de hoogste resolutie die deze uitsnede toelaat, met dezelfde beeldverhouding en zonder de bron te vergroten (maximaal 12.000 px per zijde / 40 MP).",outputMultiple:"pixels · {multiple}× basisformaat",baseDimensions:"{width} × {height} px · basis",qualityCopy:"Alle afbeeldingstypen behouden de hoogste resolutie die de bron en uitsnede toelaten, met dezelfde beeldverhouding. PNG voegt geen coderingsverlies toe. Vergroten creëert geen nieuwe details.","guide_episode-hd":"640 × 360 px is het HD-basisformaat (16:9). De export behoudt de hoogste resolutie die de bron en uitsnede toelaten, met dezelfde beeldverhouding. Gebruik een uniek afleveringsbeeld; vermijd spoilers, titelkaarten, ondertiteling en watermerken."});
 
 Object.assign(COPY.en,{chooseImageError:"Choose a PNG, JPG, WebP, AVIF or JXL image.",loadingImage:"Opening image…"});
 Object.assign(COPY.nl,{chooseImageError:"Kies een PNG-, JPG-, WebP-, AVIF- of JXL-afbeelding.",loadingImage:"Afbeelding wordt geopend…"});
@@ -134,9 +134,9 @@ function choosePreset(p){
 }
 function updatePresetInfo(){
  const p=state.preset;ui.presetName.textContent=state.custom?t("customPreset"):presetLabel(p);ui.presetIcon.textContent=state.custom?"⌗":p.icon;
- const output=exportDimensions();
- ui.dimensions.textContent=output.width+" × "+output.height+" px"+(p.preserveResolution?" · "+output.multiple+"×":"");ui.outputSize.innerHTML=output.width+" <i>×</i> "+output.height;ui.outputScale.textContent=p.preserveResolution?t("outputMultiple",output):t("exactPixels");ui.seasonPanel.hidden=p.id!=="season-poster";
- ui.resolutionOptions.hidden=!p.preserveResolution;ui.resolutionHelp.textContent=t("resolutionHelp",output);
+ const output=exportDimensions(),display={...output,multiple:new Intl.NumberFormat(state.language,{maximumFractionDigits:3}).format(output.multiple)};
+ ui.dimensions.textContent=output.width+" × "+output.height+" px"+(p.preserveResolution?" · "+display.multiple+"×":"");ui.outputSize.innerHTML=output.width+" <i>×</i> "+output.height;ui.outputScale.textContent=p.preserveResolution?t("outputMultiple",display):t("exactPixels");ui.seasonPanel.hidden=p.id!=="season-poster";
+ ui.resolutionOptions.hidden=!p.preserveResolution;ui.resolutionHelp.textContent=t("resolutionHelp",display);
  ui.guideTitle.textContent=state.custom?t("customTitle"):p.width+" × "+p.height+" px · "+presetLabel(p);
  ui.clearlogoGuide.hidden=state.custom||p.id!=="clearlogo";
  ui.guideCopy.textContent=state.custom?t("customGuideline"):p.id==="clearlogo"?t("clearlogoSummary"):t("guide_"+p.id);
@@ -167,15 +167,17 @@ function geometry(){
 function constrainPosition(){const g=geometry();if(!g)return;state.shiftX=g.x-g.originX;state.shiftY=g.y-g.originY}
 function exportDimensions(g=geometry()){
  const p=state.preset;
- let multiple=1;
+ let steps=1,divisor=1;
  if(p.preserveResolution&&ui.exportResolution.value==="auto"&&g&&state.hasArtwork){
-  // Work in base-size coordinates for editing; render the original source directly
-  // to the larger export. Transparent file padding must not inflate logo resolution.
+  // Reduced ratio units allow intermediate resolutions with exact integer pixels.
+  // Transparent file padding must not inflate the visible logo's resolution.
+  let remainder=p.height;divisor=p.width;
+  while(remainder){const next=divisor%remainder;divisor=remainder;remainder=next}
   const sourceLimit=1/g.scale;
   const canvasLimit=Math.min(12000/p.width,12000/p.height,Math.sqrt(40000000/(p.width*p.height)));
-  multiple=Math.max(1,Math.floor(Math.min(sourceLimit,canvasLimit)+1e-9));
+  steps=Math.max(divisor,Math.floor(Math.min(sourceLimit,canvasLimit)*divisor+1e-9));
  }
- return {width:p.width*multiple,height:p.height*multiple,multiple};
+ return {width:(p.width/divisor)*steps,height:(p.height/divisor)*steps,multiple:steps/divisor};
 }
 function sizeBoard(){
  const ratio=state.preset.width/state.preset.height;

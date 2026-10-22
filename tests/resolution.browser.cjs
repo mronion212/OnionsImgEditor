@@ -3,7 +3,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs/promises');
 const path = require('node:path');
 
-// Verify actual downloads: source detail, whole multiples, crops and logo alpha.
+// Verify actual downloads: source detail, exact aspect ratios, crops and logo alpha.
 (async () => {
   const browser = await chromium.launch({ channel: 'msedge', headless: true });
   try {
@@ -42,7 +42,13 @@ const path = require('node:path');
       assert.deepEqual(output, { width, height, multiple });
       assert.match(await page.locator('#export-resolution-help').textContent(), new RegExp(`${width} × ${height} px`));
       assert.equal((await page.locator('#output-size').textContent()).replace(/\s+/g, ''), `${width}×${height}`);
-      assert.equal(await page.locator('#selected-dimensions').textContent(), `${width} × ${height} px · ${multiple}×`);
+      const label = new Intl.NumberFormat('en', { maximumFractionDigits: 3 }).format(multiple);
+      assert.equal(await page.locator('#selected-dimensions').textContent(), `${width} × ${height} px · ${label}×`);
+      const geometry = await page.evaluate(() => window.editorTest.geometry());
+      if (geometry) {
+        assert.equal(width * geometry.h, height * geometry.w, 'export keeps the exact preset aspect ratio');
+        if (geometry.scale <= 1) assert.ok(multiple * geometry.scale <= 1 + 1e-9, 'export never enlarges source pixels');
+      }
     }
     async function downloadPixels(jpeg = false) {
       assert.equal(await page.locator('#download-button').isDisabled(), false, 'export is enabled');
@@ -79,7 +85,7 @@ const path = require('node:path');
     }
     await page.locator('[data-preset="episode-hd"]').click();
     assert.equal(await page.locator('#export-resolution').inputValue(), 'auto');
-    for (const [width, height, multiple] of [[1920,1080,3],[3840,2160,6],[1280,720,2],[640,360,1]]) {
+    for (const [width, height, multiple] of [[1920,1080,3],[2560,1440,4],[3840,2160,6],[1280,720,2],[640,360,1]]) {
       await upload(width, height);await expectSize(width, height, multiple);
       const pixels = await downloadPixels();assert.equal(pixels.differences, 0, 'native episode detail is unchanged');
     }
@@ -94,11 +100,31 @@ const path = require('node:path');
     await page.selectOption('#export-resolution', 'base');await expectSize(640, 360, 1);
     assert.equal((await downloadPixels()).width, 640);
     await page.selectOption('#export-resolution', 'auto');
-    await upload(1280, 719);await expectSize(640, 360, 1);
+    await upload(1280, 719);await expectSize(1264, 711, 1.975);
+    const almost720 = await downloadPixels();assert.equal(almost720.width, 1264);assert.equal(almost720.height, 711);
     await upload(320, 180);await expectSize(640, 360, 1);
     assert.equal(await page.locator('#download-button').isDisabled(), true);
     await page.locator('#allow-upscale').check();await expectSize(640, 360, 1);
     assert.equal((await downloadPixels()).width, 640);
+
+    await page.locator('[data-preset="background"]').click();
+    for (const [width, height] of [[2560,1440],[3200,1800],[2048,1152]]) {
+      await upload(width, height);await expectSize(width, height, width / 1920);
+      assert.equal((await downloadPixels()).differences, 0, 'intermediate background resolution retains every source pixel');
+    }
+    await upload(2560,1440);
+    await page.selectOption('#format-select', 'jpeg');
+    const jpeg1440 = await downloadPixels(true);assert.equal(jpeg1440.width, 2560);assert.equal(jpeg1440.height, 1440);
+    await page.selectOption('#format-select', 'png');
+    await page.selectOption('#language-select', 'nl');
+    assert.match(await page.locator('#export-resolution-help').textContent(), /1,333× basisformaat/);
+    assert.match(await page.locator('#export-resolution-help').textContent(), /dezelfde beeldverhouding/);
+    await page.selectOption('#language-select', 'en');
+    await page.locator('#zoom-slider').evaluate(node => {node.value = '1.2';node.dispatchEvent(new Event('input'));});
+    await expectSize(2128,1197,133/120);
+    const zoomed1440 = await downloadPixels();assert.equal(zoomed1440.width, 2128);assert.equal(zoomed1440.height, 1197);
+    await page.selectOption('#export-resolution', 'base');await expectSize(1920,1080,1);
+    await page.selectOption('#export-resolution', 'auto');
 
     await page.locator('[data-preset="clearlogo"]').click();
     await upload(2400, 930, true);await expectSize(2400, 930, 3);
@@ -120,9 +146,9 @@ const path = require('node:path');
     assert.deepEqual(await page.evaluate(() => window.editorTest.exportDimensions()), { width: 680, height: 1000, multiple: 1 });
     await page.selectOption('#language-select', 'en');
     assert.equal(await page.locator('#jpeg-quality').inputValue(), '1');
-    for (const [preset, width, height] of [
-      ['poster',680,1000],['season-poster',680,1000],['background',1920,1080],
-      ['banner',758,140],['icon',1024,1024],['clearart',1000,562],['episode-sd',640,480]
+    for (const [preset, width, height, nearWidth, nearHeight] of [
+      ['poster',680,1000,1343,1975],['season-poster',680,1000,1343,1975],['background',1920,1080,3824,2151],
+      ['banner',758,140,1137,210],['icon',1024,1024,2047,2047],['clearart',1000,562,2000,1124],['episode-sd',640,480,1276,957]
     ]) {
       await page.locator('[data-preset="' + preset + '"]').click();
       if (preset === 'season-poster') await page.locator('#season-panel .switch').click();
@@ -132,33 +158,46 @@ const path = require('node:path');
       assert.equal(pixels.differences, 0, preset + ' retains native detail in the actual PNG');
       await page.selectOption('#export-resolution', 'base');await expectSize(width, height, 1);
       await page.selectOption('#export-resolution', 'auto');
-      await upload(width * 2 - 1, height * 2);
-      if (preset === 'clearart') await expectSize(width * 2, height * 2, 2);
-      else await expectSize(width, height, 1);
+      await upload(width * 2 - 1, height * 2, preset === 'clearart');
+      await expectSize(nearWidth, nearHeight, nearWidth / width);
+      const intermediate = await downloadPixels();assert.equal(intermediate.width, nearWidth);assert.equal(intermediate.height, nearHeight);
       await upload(Math.floor(width / 2), Math.floor(height / 2));
       assert.equal(await page.locator('#download-button').isDisabled(), true, preset + ' blocks upscaling');
     }
     await page.locator('[data-preset="poster"]').click();
     await upload(1360,2000);
     await page.locator('#zoom-slider').evaluate(node => {node.value = '1.5';node.dispatchEvent(new Event('input'));});
-    await expectSize(680,1000,1);
+    await expectSize(901,1325,1.325);
     // Custom dimensions use the same automatic source-resolution policy.
     await page.locator('.custom-heading').click();
     await page.locator('#custom-width').fill('340');await page.locator('#custom-height').fill('500');
     await page.locator('#apply-custom').click();await expectSize(1360,2000,4);
     assert.equal((await downloadPixels()).differences, 0);
+    await page.locator('#custom-width').fill('680');await page.locator('#custom-height').fill('1000');
+    await page.locator('#apply-custom').click();await upload(1020,1500);await expectSize(1020,1500,1.5);
+    assert.equal((await downloadPixels()).differences, 0, 'custom sizes retain fractional base multiples');
     await page.locator('#remove-image').click();
     await page.locator('[data-preset="clearlogo"]').click();await expectSize(800, 310, 1);
     // The existing canvas limits also bound automatic resolution for huge sources.
     const limits = await page.evaluate(() => {
       const { state, exportDimensions } = window.editorTest;
+      const preset = state.preset;
       state.hasArtwork = true;
-      const output = exportDimensions({scale:0.00001});
+      const output = [[1920,1080],[800,310],[758,140],[341,499],[12000,1]].map(([width,height]) => {
+        state.preset = {width,height,preserveResolution:true};
+        return {baseWidth:width,baseHeight:height,...exportDimensions({scale:0.00001})};
+      });
+      state.preset = preset;
       state.hasArtwork = false;
       return output;
     });
-    assert.ok(limits.width <= 12000 && limits.height <= 12000 && limits.width * limits.height <= 40000000);
+    for (const output of limits) {
+      assert.ok(Number.isInteger(output.width) && Number.isInteger(output.height));
+      assert.ok(output.width <= 12000 && output.height <= 12000 && output.width * output.height <= 40000000);
+      assert.equal(output.width * output.baseHeight, output.height * output.baseWidth);
+      assert.ok(output.width >= output.baseWidth && output.height >= output.baseHeight);
+    }
     assert.deepEqual(errors, []);
-    console.log('PASS: all presets and custom sizes, native PNG detail, JPEG maximum default, HD/4K pixels, whole multiples, wide crop, zoom, base override, undersized sources, high-resolution logo alpha/gutters/outline, padded logos, Dutch copy and export limits.');
+    console.log('PASS: all presets and custom sizes, native PNG detail, 1440p PNG/JPEG, intermediate resolutions with exact aspect ratios, crop/zoom, base override, undersized sources, logo alpha/gutters/outline, Dutch fractional scales and export limits.');
   } finally { await browser.close(); }
 })().catch(error => { console.error(error);process.exitCode = 1; });

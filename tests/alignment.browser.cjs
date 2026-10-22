@@ -37,10 +37,10 @@ const path = require('node:path');
         const analysis = window.editorTest.analyzeImage(image),b = analysis.framingBounds;
         return {width:image.width,height:image.height,left:b.left,right:image.width-b.right,top:b.top,bottom:image.height-b.bottom};
       }, Buffer.concat(chunks).toString('base64'));
-      assert.equal(result.width, 1600);assert.equal(result.height, 620);
+      assert.equal(result.width, 1760);assert.equal(result.height, 682);
       assert.ok(Math.abs(result.left - result.right) <= 2, `horizontal margins match: ${JSON.stringify(result)}`);
       assert.ok(Math.abs(result.top - result.bottom) <= 2, `vertical margins match: ${JSON.stringify(result)}`);
-      assert.ok(Math.min(result.left, result.right, result.top, result.bottom) >= 20);
+      assert.ok(Math.min(result.left, result.right, result.top, result.bottom) >= 22);
       assert.equal(await page.locator('#center-status-text').textContent(), 'Centered');
       return result;
     }

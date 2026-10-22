@@ -69,6 +69,7 @@ const os = require('node:os');
     await page.selectOption('#preview-background','black');
     assert.equal(await page.locator('#artboard').evaluate(node=>getComputedStyle(node).backgroundColor),'rgb(0, 0, 0)');
     await page.selectOption('#preview-background','white');
+    await page.selectOption('#export-resolution','base');
     const downloadEvent = page.waitForEvent('download');await page.locator('#download-button').click();
     const download = await downloadEvent;
     const exportPath = path.join(os.tmpdir(), 'onions-editor-test-export.png');await download.saveAs(exportPath);
